@@ -3,7 +3,7 @@ package nl.kooi.match.core.usecases.player;
 import lombok.RequiredArgsConstructor;
 import nl.kooi.match.core.command.InjuredPlayerRequest;
 import nl.kooi.match.core.command.InjuredPlayerResponse;
-import nl.kooi.match.core.infrastructure.repository.PlayerRepository;
+import nl.kooi.match.core.infrastructure.port.PlayerRepository;
 import nl.kooi.match.core.usecases.UseCaseHandler;
 import org.springframework.stereotype.Component;
 
