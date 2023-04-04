@@ -50,9 +50,9 @@ public class InjuredPlayerUseCase implements UseCaseHandler<InjuredPlayerRequest
         return match -> match.getPlayerEvents().stream()
                 .filter(filterUntilMinuteInclusive(command.minute()))
                 .filter(filterPlayerEventsById(command.playerId()))
-                .filter(isPlayerPartOfGame())
-                .filter(hasPlayerHadRedCard().negate())
-                .allMatch(isPlayerSubstituted().negate());
+                .noneMatch(isPlayerPartOfGame().negate()
+                        .or(hasPlayerHadRedCard())
+                        .or(isPlayerSubstituted()));
     }
 
     private static Predicate<PlayerEvent> filterPlayerEventsById(Long id) {
