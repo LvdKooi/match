@@ -2,6 +2,7 @@ package nl.kooi.match.core.infrastructure.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
 import nl.kooi.match.core.enums.MatchStatus;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -9,6 +10,7 @@ import java.time.Instant;
 import java.util.Set;
 
 @Entity
+@Getter
 public class MatchEntity {
 
     @Id

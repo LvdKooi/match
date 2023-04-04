@@ -1,6 +1,10 @@
 package nl.kooi.match.core.command;
 
+import jakarta.validation.constraints.NotNull;
 import nl.kooi.match.core.enums.InjuryType;
 
-public record InjuredPlayerRequest(Long playerId, Long matchId, int minute, InjuryType injuryType) {
+public record InjuredPlayerRequest(@NotNull Long playerId,
+                                   @NotNull Long matchId,
+                                   int minute,
+                                   @NotNull InjuryType injuryType) {
 }

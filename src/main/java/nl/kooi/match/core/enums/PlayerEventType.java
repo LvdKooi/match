@@ -6,4 +6,5 @@ public enum PlayerEventType {
     INJURED,
     YELLOW_CARD,
     RED_CARD
+
 }

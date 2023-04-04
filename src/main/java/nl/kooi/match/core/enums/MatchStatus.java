@@ -1,11 +1,13 @@
 package nl.kooi.match.core.enums;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
 import java.util.Set;
 
 @RequiredArgsConstructor
+@Getter
 public enum MatchStatus {
 
     FINISHED(Collections.emptySet()),
