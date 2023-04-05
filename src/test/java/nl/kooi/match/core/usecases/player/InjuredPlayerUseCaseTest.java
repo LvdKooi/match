@@ -16,7 +16,6 @@ import java.util.Optional;
 import static nl.kooi.match.core.enums.ResponseType.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @SpringJUnitConfig(InjuredPlayerUseCase.class)
@@ -36,7 +35,7 @@ class InjuredPlayerUseCaseTest {
                 .isNotNull()
                 .isEqualTo(MATCH_NOT_FOUND);
 
-        verify(matchDao, never()).addPlayerEvent(anyLong(), any(PlayerEvent.class));
+        verify(matchDao, never()).save(any(Match.class));
     }
 
     @Test
@@ -47,7 +46,7 @@ class InjuredPlayerUseCaseTest {
                 .isNotNull()
                 .isEqualTo(PLAYER_NOT_ACTIVE_IN_MATCH);
 
-        verify(matchDao, never()).addPlayerEvent(anyLong(), any(PlayerEvent.class));
+        verify(matchDao, never()).save(any(Match.class));
     }
 
     @Test
@@ -62,7 +61,7 @@ class InjuredPlayerUseCaseTest {
                 .isNotNull()
                 .isEqualTo(PLAYER_NOT_ACTIVE_IN_MATCH);
 
-        verify(matchDao, never()).addPlayerEvent(anyLong(), any(PlayerEvent.class));
+        verify(matchDao, never()).save(any(Match.class));
     }
 
     @Test
@@ -77,18 +76,17 @@ class InjuredPlayerUseCaseTest {
                 .isNotNull()
                 .isEqualTo(PLAYER_NOT_ACTIVE_IN_MATCH);
 
-        verify(matchDao, never()).addPlayerEvent(anyLong(), any(PlayerEvent.class));
+        verify(matchDao, never()).save(any(Match.class));
     }
 
     @Test
     void whenPlayerIsPartOfMatch_theSuccessfulIsReturned() {
         when(matchDao.findById(1L)).thenReturn(Optional.of(getDefaultMatchForPlayerWithId(1L)));
-        when(matchDao.addPlayerEvent(anyLong(), any(PlayerEvent.class)))
-                .thenReturn(getDefaultMatchForPlayerWithId(1L));
+        when(matchDao.save(any(Match.class))).thenReturn(getDefaultMatchForPlayerWithId(1L));
 
         assertThat(useCase.handle(getDefaultRequest()).getResponseType()).isNotNull().isEqualTo(SUCCESSFULLY_PROCESSED);
 
-        verify(matchDao, times(1)).addPlayerEvent(anyLong(), any(PlayerEvent.class));
+        verify(matchDao, times(1)).save(any(Match.class));
     }
 
     private static Match getDefaultMatchForPlayerWithId(Long id) {

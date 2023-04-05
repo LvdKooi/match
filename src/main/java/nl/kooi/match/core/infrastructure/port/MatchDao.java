@@ -11,5 +11,4 @@ public interface MatchDao {
 
     Match save(Match match);
 
-    Match addPlayerEvent(Long matchId, PlayerEvent event);
 }
