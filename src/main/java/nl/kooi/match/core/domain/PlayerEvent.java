@@ -8,7 +8,7 @@ import nl.kooi.match.core.enums.PlayerEventType;
 @Getter
 @Builder
 @ToString
-public class PlayerEvent {
+public class PlayerEvent implements Comparable<PlayerEvent> {
 
     private Long matchId;
 
@@ -17,4 +17,9 @@ public class PlayerEvent {
     private PlayerEventType eventType;
 
     private int minute;
+
+    @Override
+    public int compareTo(PlayerEvent o) {
+        return Integer.compare(this.minute, o.getMinute());
+    }
 }

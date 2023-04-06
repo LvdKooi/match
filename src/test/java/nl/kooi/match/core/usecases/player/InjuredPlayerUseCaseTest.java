@@ -40,7 +40,7 @@ class InjuredPlayerUseCaseTest {
 
     @Test
     void whenMatchHasNoPlayerEvents_thenPlayerNotActiveInMatchIsReturned() {
-        when(matchDao.findById(1L)).thenReturn(Optional.of(new Match()));
+        when(matchDao.findById(1L)).thenReturn(Optional.of(new Match(null, null, null, null)));
 
         assertThat(useCase.handle(getDefaultRequest()).getResponseType())
                 .isNotNull()
@@ -53,7 +53,7 @@ class InjuredPlayerUseCaseTest {
     void whenPlayerHasHadRedCard_thenPlayerNotActiveInMatchIsReturned() {
 
         var match = getDefaultMatchForPlayerWithId(1L);
-        match.getPlayerEvents().add(PlayerEvent.builder().playerId(1L).eventType(PlayerEventType.RED_CARD).minute(1).build());
+        match.playerEvents().add(PlayerEvent.builder().playerId(1L).eventType(PlayerEventType.RED_CARD).minute(1).build());
 
         when(matchDao.findById(1L)).thenReturn(Optional.of(match));
 
@@ -68,7 +68,7 @@ class InjuredPlayerUseCaseTest {
     void whenPlayerIsAlreadySubstituted_thenPlayerNotActiveInMatchIsReturned() {
 
         var match = getDefaultMatchForPlayerWithId(1L);
-        match.getPlayerEvents().add(PlayerEvent.builder().playerId(1L).eventType(PlayerEventType.SUBSTITUTED).minute(1).build());
+        match.playerEvents().add(PlayerEvent.builder().playerId(1L).eventType(PlayerEventType.SUBSTITUTED).minute(1).build());
 
         when(matchDao.findById(1L)).thenReturn(Optional.of(match));
 
@@ -90,9 +90,8 @@ class InjuredPlayerUseCaseTest {
     }
 
     private static Match getDefaultMatchForPlayerWithId(Long id) {
-        var match = new Match();
-        match.setId(1L);
-        match.getPlayerEvents()
+        var match = new Match(1L, null, null, null);
+        match.playerEvents()
                 .add(PlayerEvent.builder().matchId(1L).minute(0).playerId(id).eventType(PlayerEventType.LINED_UP).build());
 
         return match;
