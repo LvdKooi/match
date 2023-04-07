@@ -1,8 +1,11 @@
 package nl.kooi.match.core.domain;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import nl.kooi.match.core.domain.exception.PlayerException;
 import nl.kooi.match.core.enums.MatchStatus;
 import nl.kooi.match.core.enums.PlayerEventType;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.Comparator;
 import java.util.HashSet;
@@ -11,6 +14,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 
+@Validated
 public record Match(Long id, MatchStatus matchStatus, String matchName, Set<PlayerEvent> playerEvents) {
 
     public Match {
@@ -25,7 +29,7 @@ public record Match(Long id, MatchStatus matchStatus, String matchName, Set<Play
         return Set.copyOf(playerEvents);
     }
 
-    public void addPLayerEvent(PlayerEvent event) {
+    public void addPLayerEvent(@Valid @NotNull PlayerEvent event) {
         switch (event.getEventType()) {
             case INJURED, SUBSTITUTED, RED_CARD -> verifyIsCurrentlyPartOfMatch(event);
             case LINED_UP -> verifyLineUpEvent(event);

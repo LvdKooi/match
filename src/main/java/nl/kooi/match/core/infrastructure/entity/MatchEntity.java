@@ -29,9 +29,9 @@ public class MatchEntity {
     @Enumerated(value = EnumType.STRING)
     private MatchStatus matchStatus;
 
-    @OneToMany
+    @OneToOne
     private TeamEntity team1;
-    @OneToMany
+    @OneToOne
     private TeamEntity team2;
 
     @OneToMany
