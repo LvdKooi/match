@@ -14,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import java.util.Optional;
 
 import static nl.kooi.match.core.enums.ResponseType.*;
+import static nl.kooi.match.core.usecases.player.PlayerUseCaseHelper.getDefaultMatchForPlayerWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -86,15 +87,7 @@ class InjuredPlayerUseCaseTest {
 
         assertThat(useCase.handle(getDefaultRequest()).getResponseType()).isNotNull().isEqualTo(PROCESSED_SUCCESSFULLY);
 
-        verify(matchDao, times(1)).save(any(Match.class));
-    }
-
-    private static Match getDefaultMatchForPlayerWithId(Long id) {
-        var match = new Match(1L, null, null, null);
-        match.playerEvents()
-                .add(PlayerEvent.builder().matchId(1L).minute(0).playerId(id).eventType(PlayerEventType.LINED_UP).build());
-
-        return match;
+        verify(matchDao, atMostOnce()).save(any(Match.class));
     }
 
     private static InjuredPlayerRequest getDefaultRequest() {

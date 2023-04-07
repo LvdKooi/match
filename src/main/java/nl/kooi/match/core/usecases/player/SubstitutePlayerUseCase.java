@@ -1,6 +1,7 @@
 package nl.kooi.match.core.usecases.player;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nl.kooi.match.core.command.PlayerUseCaseResponse;
 import nl.kooi.match.core.command.SubstitutePlayerRequest;
@@ -13,25 +14,26 @@ import nl.kooi.match.core.enums.ResponseType;
 import nl.kooi.match.core.infrastructure.port.MatchDao;
 import nl.kooi.match.core.usecases.UseCaseHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
 @Transactional
+@Validated
 public class SubstitutePlayerUseCase implements UseCaseHandler<SubstitutePlayerRequest, PlayerUseCaseResponse> {
 
     private final MatchDao matchDao;
 
     @Override
-    public PlayerUseCaseResponse handle(SubstitutePlayerRequest command) {
+    public PlayerUseCaseResponse handle(@Valid SubstitutePlayerRequest command) {
         return matchDao.findById(command.matchId())
                 .map(match -> handlePlayerEvents(match, command))
                 .orElseGet(PlayerUseCaseResponse::matchNotFound);
     }
 
     private PlayerUseCaseResponse handlePlayerEvents(Match match, SubstitutePlayerRequest command) {
-
         var substituteResponse = handleSubstituteEvent(match, command);
         var lineUpResponse = handleLineUpEvent(match, command);
 

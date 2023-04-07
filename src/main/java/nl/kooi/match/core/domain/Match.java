@@ -35,8 +35,7 @@ public record Match(Long id, MatchStatus matchStatus, String matchName, Set<Play
 
     private void verifyYellowCardEvent(PlayerEvent event) {
         Optional.of(this)
-                .filter(isPlayerCurrentlyPartOfMatch(event))
-                .filter(hasPlayerAlreadyHadAYellowCard(event))
+                .filter(hasPlayerAlreadyHadAYellowCard(event).negate())
                 .orElseThrow(PlayerException::alreadyHadYellowCard);
     }
 
@@ -56,6 +55,7 @@ public record Match(Long id, MatchStatus matchStatus, String matchName, Set<Play
     private static Predicate<Match> hasPlayerAlreadyHadAYellowCard(PlayerEvent event) {
         return match -> match.playerEvents().stream()
                 .filter(filterPlayerEventsById(event.getPlayerId()))
+                .filter(filterUntilMinuteInclusive(event.getMinute()))
                 .anyMatch(playerEvent -> playerEvent.getEventType() == PlayerEventType.YELLOW_CARD);
     }
 
@@ -79,8 +79,7 @@ public record Match(Long id, MatchStatus matchStatus, String matchName, Set<Play
                 match.playerEvents().stream()
                         .filter(filterUntilMinuteInclusive(event.getMinute()))
                         .filter(filterPlayerEventsById(event.getPlayerId()))
-                        .noneMatch(isPlayerPartOfGame().negate()
-                                .or(hasPlayerHadRedCard())
+                        .noneMatch(hasPlayerHadRedCard()
                                 .or(isPlayerSubstituted()));
     }
 
@@ -92,7 +91,7 @@ public record Match(Long id, MatchStatus matchStatus, String matchName, Set<Play
         return event -> event.getMinute() <= minute;
     }
 
-    private static Predicate<PlayerEvent> isPlayerPartOfGame() {
+    private static Predicate<PlayerEvent> isPlayerLinedUp() {
         return event -> event.getEventType() == PlayerEventType.LINED_UP;
     }
 
