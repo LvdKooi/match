@@ -1,4 +1,7 @@
 package nl.kooi.match.core.command;
 
-public record SubstitutePlayerRequest(Long playerId, Long substituteForPlayerId, int minute) {
+import jakarta.validation.constraints.NotNull;
+
+public record SubstitutePlayerRequest(@NotNull Long playerId, @NotNull Long matchId,
+                                      @NotNull Long substituteForPlayerId, int minute) {
 }

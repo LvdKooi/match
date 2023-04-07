@@ -84,7 +84,7 @@ class InjuredPlayerUseCaseTest {
         when(matchDao.findById(1L)).thenReturn(Optional.of(getDefaultMatchForPlayerWithId(1L)));
         when(matchDao.save(any(Match.class))).thenReturn(getDefaultMatchForPlayerWithId(1L));
 
-        assertThat(useCase.handle(getDefaultRequest()).getResponseType()).isNotNull().isEqualTo(SUCCESSFULLY_PROCESSED);
+        assertThat(useCase.handle(getDefaultRequest()).getResponseType()).isNotNull().isEqualTo(PROCESSED_SUCCESSFULLY);
 
         verify(matchDao, times(1)).save(any(Match.class));
     }

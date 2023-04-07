@@ -1,5 +1,6 @@
 package nl.kooi.match.core.usecases.player;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nl.kooi.match.core.command.InjuredPlayerRequest;
@@ -17,6 +18,7 @@ import static nl.kooi.match.core.enums.InjuryType.INJURED;
 
 @Component
 @RequiredArgsConstructor
+@Transactional
 @Validated
 public class InjuredPlayerUseCase implements UseCaseHandler<InjuredPlayerRequest, PlayerUseCaseResponse> {
 

@@ -20,7 +20,19 @@ public final class PlayerUseCaseResponse {
     }
 
     public static PlayerUseCaseResponse successful() {
-        return new PlayerUseCaseResponse(ResponseType.SUCCESSFULLY_PROCESSED);
+        return new PlayerUseCaseResponse(ResponseType.PROCESSED_SUCCESSFULLY);
+    }
+
+    public static PlayerUseCaseResponse alreadyHadAYellowCard() {
+        return new PlayerUseCaseResponse(ResponseType.ALREADY_HAD_A_YELLOW_CARD);
+    }
+
+    public static PlayerUseCaseResponse lineUpNotAllowed() {
+        return new PlayerUseCaseResponse(ResponseType.LINE_UP_NOT_ALLOWED);
+    }
+
+    public static PlayerUseCaseResponse fail() {
+        return new PlayerUseCaseResponse(ResponseType.PROCESSED_UNSUCCESSFULLY);
     }
 
 }
