@@ -20,6 +20,11 @@ public record Match(Long id, MatchStatus matchStatus, String matchName, Set<Play
         }
     }
 
+    @Override
+    public Set<PlayerEvent> playerEvents() {
+        return Set.copyOf(playerEvents);
+    }
+
     public void addPLayerEvent(PlayerEvent event) {
         switch (event.getEventType()) {
             case INJURED, SUBSTITUTED, RED_CARD -> verifyIsCurrentlyPartOfMatch(event);
@@ -75,7 +80,7 @@ public record Match(Long id, MatchStatus matchStatus, String matchName, Set<Play
     }
 
     private static Predicate<Match> isPlayerCurrentlyPartOfMatch(PlayerEvent event) {
-        return match -> !match.playerEvents().isEmpty() &&
+        return match -> match.playerEvents.stream().anyMatch(isPlayerLinedUp()) &&
                 match.playerEvents().stream()
                         .filter(filterUntilMinuteInclusive(event.getMinute()))
                         .filter(filterPlayerEventsById(event.getPlayerId()))

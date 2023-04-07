@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static nl.kooi.match.core.enums.ResponseType.*;
 import static nl.kooi.match.core.usecases.player.PlayerUseCaseHelper.getDefaultMatchForPlayerWithId;
@@ -53,8 +54,7 @@ class InjuredPlayerUseCaseTest {
     @Test
     void whenPlayerHasHadRedCard_thenPlayerNotActiveInMatchIsReturned() {
 
-        var match = getDefaultMatchForPlayerWithId(1L);
-        match.playerEvents().add(PlayerEvent.builder().playerId(1L).eventType(PlayerEventType.RED_CARD).minute(1).build());
+        var match = getDefaultMatchForPlayerWithId(1L, Set.of(PlayerEvent.builder().playerId(1L).eventType(PlayerEventType.RED_CARD).minute(1).build()));
 
         when(matchDao.findById(1L)).thenReturn(Optional.of(match));
 
@@ -68,8 +68,7 @@ class InjuredPlayerUseCaseTest {
     @Test
     void whenPlayerIsAlreadySubstituted_thenPlayerNotActiveInMatchIsReturned() {
 
-        var match = getDefaultMatchForPlayerWithId(1L);
-        match.playerEvents().add(PlayerEvent.builder().playerId(1L).eventType(PlayerEventType.SUBSTITUTED).minute(1).build());
+        var match = getDefaultMatchForPlayerWithId(1L, Set.of(PlayerEvent.builder().playerId(1L).eventType(PlayerEventType.SUBSTITUTED).minute(1).build()));
 
         when(matchDao.findById(1L)).thenReturn(Optional.of(match));
 
