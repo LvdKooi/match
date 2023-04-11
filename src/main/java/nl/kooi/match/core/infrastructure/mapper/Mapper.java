@@ -40,7 +40,7 @@ public interface Mapper {
         return Stream.of(entity.getTeam1(), entity.getTeam2())
                 .filter(Objects::nonNull)
                 .map(TeamEntity::getName)
-                .reduce("", (s1, s2) -> s1.concat(" -").concat(s2));
+                .reduce("", (s1, s2) -> s1.equals("") ? s2 : s1.concat(" - ").concat(s2));
     }
 
     default PlayerEntity mapPlayerFromPlayerEvent(PlayerEvent event) {
