@@ -1,14 +1,14 @@
 package nl.kooi.match.core.domain;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import nl.kooi.match.core.enums.PlayerEventType;
 
 @Getter
 @Builder
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class PlayerEvent implements Comparable<PlayerEvent> {
 
     @NotNull
