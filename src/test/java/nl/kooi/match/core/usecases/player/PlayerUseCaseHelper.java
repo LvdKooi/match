@@ -14,15 +14,22 @@ import java.util.Set;
 public class PlayerUseCaseHelper {
 
     public static Match getDefaultMatchForPlayerWithId(Long id) {
-        return getDefaultMatchForPlayerWithId(id, Collections.emptySet());
+        return getDefaultMatchForPlayerWithIdAndMatchStatus(id, MatchStatus.STARTED);
     }
 
-    public static Match getDefaultMatchForPlayerWithId(Long id, Set<PlayerEvent> additionalPlayerEvents) {
+    public static Match getDefaultMatchForPlayerWithIdAndMatchStatus(Long id, MatchStatus status) {
+        return getDefaultMatchForPlayerWithId(id, Collections.emptySet(), status);
+    }
+
+    public static Match getDefaultMatchForPlayerWithId(Long id, Set<PlayerEvent> additionalPlayerEvents, MatchStatus status) {
         var playerEvents = new HashSet<PlayerEvent>();
         playerEvents.add(PlayerEvent.builder().matchId(1L).minute(0).playerId(id).eventType(PlayerEventType.LINED_UP).build());
         playerEvents.addAll(additionalPlayerEvents);
 
-        return new Match(1L, MatchStatus.STARTED, null, playerEvents);
+        return new Match(1L, status, null, playerEvents);
     }
 
+    public static Match getDefaultMatchForPlayerWithId(Long id, Set<PlayerEvent> additionalPlayerEvents) {
+        return getDefaultMatchForPlayerWithId(id, additionalPlayerEvents, MatchStatus.STARTED);
+    }
 }

@@ -2,6 +2,7 @@ package nl.kooi.match.core.domain;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import nl.kooi.match.core.domain.exception.MatchStatusException;
 import nl.kooi.match.core.domain.exception.PlayerException;
 import nl.kooi.match.core.enums.MatchStatus;
 import nl.kooi.match.core.enums.PlayerEventType;
@@ -12,6 +13,8 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 
 @Validated
@@ -31,15 +34,33 @@ public record Match(Long id, MatchStatus matchStatus, String matchName, Set<Play
 
     public void addPLayerEvent(@Valid @NotNull PlayerEvent event) {
         switch (event.getEventType()) {
-            case INJURED, SUBSTITUTED, RED_CARD -> verifyIsCurrentlyPartOfMatch(event);
+            case INJURED, SUBSTITUTED, RED_CARD -> {
+                verifyIfMatchIsStarted();
+                verifyIsCurrentlyPartOfMatch(event);
+            }
             case LINED_UP -> verifyLineUpEvent(event);
             case YELLOW_CARD -> {
+                verifyIfMatchIsStarted();
                 verifyIsCurrentlyPartOfMatch(event);
                 verifyYellowCardEvent(event);
             }
         }
 
         this.playerEvents.add(event);
+    }
+
+    private void verifyIfMatchIsStarted() {
+        Optional.of(this)
+                .map(Match::matchStatus)
+                .filter(status -> status == MatchStatus.STARTED)
+                .orElseThrow(MatchStatusException::matchIsNotActive);
+    }
+
+    private void filterMatchOnStatusOrElseThrow(Stream<MatchStatus> matchStatusses, Supplier<MatchStatusException> exceptionSupplier) {
+        Optional.of(this)
+                .map(Match::matchStatus)
+                .filter(status -> matchStatusses.anyMatch(st -> st == status))
+                .orElseThrow(exceptionSupplier);
     }
 
     private void verifyYellowCardEvent(PlayerEvent event) {
@@ -49,6 +70,8 @@ public record Match(Long id, MatchStatus matchStatus, String matchName, Set<Play
     }
 
     private void verifyLineUpEvent(PlayerEvent event) {
+        filterMatchOnStatusOrElseThrow(Stream.of(MatchStatus.STARTED, MatchStatus.ANNOUNCED), MatchStatusException::matchDoesntAcceptLineUps);
+
         Optional.of(this)
                 .filter((isPlayerCurrentlyPartOfMatch(event).and(hasPlayerBeenInjured(event)))
                         .or(hasPlayerNotPlayedInMatchYet(event)))

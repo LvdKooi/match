@@ -35,4 +35,7 @@ public final class PlayerUseCaseResponse {
         return new PlayerUseCaseResponse(ResponseType.PROCESSED_UNSUCCESSFULLY);
     }
 
+    public static PlayerUseCaseResponse matchIsNotActive() {
+        return new PlayerUseCaseResponse(ResponseType.MATCH_NOT_ACTIVE);
+    }
 }

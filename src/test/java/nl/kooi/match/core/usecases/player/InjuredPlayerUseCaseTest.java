@@ -4,6 +4,7 @@ import nl.kooi.match.core.command.InjuredPlayerRequest;
 import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.PlayerEvent;
 import nl.kooi.match.core.enums.InjuryType;
+import nl.kooi.match.core.enums.MatchStatus;
 import nl.kooi.match.core.enums.PlayerEventType;
 import nl.kooi.match.core.infrastructure.port.MatchDao;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import java.util.Set;
 
 import static nl.kooi.match.core.enums.ResponseType.*;
 import static nl.kooi.match.core.usecases.player.PlayerUseCaseHelper.getDefaultMatchForPlayerWithId;
+import static nl.kooi.match.core.usecases.player.PlayerUseCaseHelper.getDefaultMatchForPlayerWithIdAndMatchStatus;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -42,7 +44,7 @@ class InjuredPlayerUseCaseTest {
 
     @Test
     void whenMatchHasNoPlayerEvents_thenPlayerNotActiveInMatchIsReturned() {
-        when(matchDao.findById(1L)).thenReturn(Optional.of(new Match(null, null, null, null)));
+        when(matchDao.findById(1L)).thenReturn(Optional.of(new Match(null, MatchStatus.STARTED, null, null)));
 
         assertThat(useCase.handle(getDefaultRequest()).getResponseType())
                 .isNotNull()
@@ -87,6 +89,18 @@ class InjuredPlayerUseCaseTest {
         assertThat(useCase.handle(getDefaultRequest()).getResponseType()).isNotNull().isEqualTo(PROCESSED_SUCCESSFULLY);
 
         verify(matchDao, atMostOnce()).save(any(Match.class));
+    }
+
+    @Test
+    void whenPlayerIsPartOfMatch_butMatchHasntStartedYet_theMatchNotActiveIsReturned() {
+        var match = getDefaultMatchForPlayerWithIdAndMatchStatus(1L, MatchStatus.ANNOUNCED);
+
+        when(matchDao.findById(1L)).thenReturn(Optional.of(match));
+        when(matchDao.save(any(Match.class))).thenReturn(match);
+
+        assertThat(useCase.handle(getDefaultRequest()).getResponseType()).isNotNull().isEqualTo(MATCH_NOT_ACTIVE);
+
+        verify(matchDao, never()).save(any(Match.class));
     }
 
     private static InjuredPlayerRequest getDefaultRequest() {

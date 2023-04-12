@@ -4,6 +4,7 @@ import nl.kooi.match.core.command.DisciplinePlayerRequest;
 import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.PlayerEvent;
 import nl.kooi.match.core.enums.CardType;
+import nl.kooi.match.core.enums.MatchStatus;
 import nl.kooi.match.core.enums.PlayerEventType;
 import nl.kooi.match.core.infrastructure.port.MatchDao;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import java.util.Set;
 
 import static nl.kooi.match.core.enums.ResponseType.*;
 import static nl.kooi.match.core.usecases.player.PlayerUseCaseHelper.getDefaultMatchForPlayerWithId;
+import static nl.kooi.match.core.usecases.player.PlayerUseCaseHelper.getDefaultMatchForPlayerWithIdAndMatchStatus;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -99,4 +101,16 @@ class DisciplinePlayerUseCaseTest {
         verify(matchDao, never()).save(any(Match.class));
     }
 
+    @Test
+    void whenPlayerIsPartOfMatch_butMatchHasntStartedYet_theMatchNotActiveIsReturned() {
+        var match = getDefaultMatchForPlayerWithIdAndMatchStatus(1L, MatchStatus.ANNOUNCED);
+
+        when(matchDao.findById(1L)).thenReturn(Optional.of(match));
+        when(matchDao.save(any(Match.class))).thenReturn(match);
+
+        assertThat(useCase.handle(new DisciplinePlayerRequest(1L, 1L, 2, CardType.RED)).getResponseType())
+                .isEqualTo(MATCH_NOT_ACTIVE);
+
+        verify(matchDao, never()).save(any(Match.class));
+    }
 }

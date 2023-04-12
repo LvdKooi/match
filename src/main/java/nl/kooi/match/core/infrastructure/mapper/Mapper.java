@@ -32,11 +32,11 @@ public interface Mapper {
 
     default String determineMatchName(MatchEntity entity) {
         return Optional.ofNullable(entity)
-                .map(this::handleMatchName)
+                .map(this::concatTeamNames)
                 .orElseGet(String::new);
     }
 
-    default String handleMatchName(MatchEntity entity) {
+    default String concatTeamNames(MatchEntity entity) {
         return Stream.of(entity.getTeam1(), entity.getTeam2())
                 .filter(Objects::nonNull)
                 .map(TeamEntity::getName)

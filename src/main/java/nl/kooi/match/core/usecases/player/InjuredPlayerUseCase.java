@@ -7,6 +7,7 @@ import nl.kooi.match.core.command.InjuredPlayerRequest;
 import nl.kooi.match.core.command.PlayerUseCaseResponse;
 import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.PlayerEvent;
+import nl.kooi.match.core.domain.exception.MatchStatusException;
 import nl.kooi.match.core.domain.exception.PlayerNotActiveInMatchException;
 import nl.kooi.match.core.enums.PlayerEventType;
 import nl.kooi.match.core.infrastructure.port.MatchDao;
@@ -39,6 +40,8 @@ public class InjuredPlayerUseCase implements UseCaseHandler<InjuredPlayerRequest
             return PlayerUseCaseResponse.successful();
         } catch (PlayerNotActiveInMatchException e) {
             return PlayerUseCaseResponse.playerIsNotActiveInMatch();
+        } catch (MatchStatusException e){
+            return PlayerUseCaseResponse.matchIsNotActive();
         }
     }
 

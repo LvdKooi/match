@@ -8,6 +8,7 @@ import nl.kooi.match.core.command.SubstitutePlayerRequest;
 import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.PlayerEvent;
 import nl.kooi.match.core.domain.exception.LineUpNotAllowedException;
+import nl.kooi.match.core.domain.exception.MatchStatusException;
 import nl.kooi.match.core.domain.exception.PlayerNotActiveInMatchException;
 import nl.kooi.match.core.enums.PlayerEventType;
 import nl.kooi.match.core.enums.ResponseType;
@@ -55,6 +56,9 @@ public class SubstitutePlayerUseCase implements UseCaseHandler<SubstitutePlayerR
             return PlayerUseCaseResponse.successful();
         } catch (PlayerNotActiveInMatchException e) {
             return PlayerUseCaseResponse.playerIsNotActiveInMatch();
+        }
+        catch (MatchStatusException e){
+            return PlayerUseCaseResponse.matchIsNotActive();
         }
     }
 

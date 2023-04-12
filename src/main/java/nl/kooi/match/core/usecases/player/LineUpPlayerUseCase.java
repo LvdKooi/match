@@ -8,6 +8,7 @@ import nl.kooi.match.core.command.PlayerUseCaseResponse;
 import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.PlayerEvent;
 import nl.kooi.match.core.domain.exception.LineUpNotAllowedException;
+import nl.kooi.match.core.domain.exception.MatchStatusException;
 import nl.kooi.match.core.enums.PlayerEventType;
 import nl.kooi.match.core.infrastructure.port.MatchDao;
 import nl.kooi.match.core.usecases.UseCaseHandler;
@@ -34,7 +35,7 @@ public class LineUpPlayerUseCase implements UseCaseHandler<LineUpPlayerRequest, 
             match.addPLayerEvent(createPlayerEvent(command));
             matchDao.save(match);
             return PlayerUseCaseResponse.successful();
-        } catch (LineUpNotAllowedException e) {
+        } catch (LineUpNotAllowedException | MatchStatusException e) {
             return PlayerUseCaseResponse.lineUpNotAllowed();
         }
     }

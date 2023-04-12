@@ -7,6 +7,7 @@ import nl.kooi.match.core.command.DisciplinePlayerRequest;
 import nl.kooi.match.core.command.PlayerUseCaseResponse;
 import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.PlayerEvent;
+import nl.kooi.match.core.domain.exception.MatchStatusException;
 import nl.kooi.match.core.domain.exception.PlayerNotActiveInMatchException;
 import nl.kooi.match.core.domain.exception.YellowCardException;
 import nl.kooi.match.core.enums.CardType;
@@ -40,6 +41,8 @@ public class DisciplinePlayerUseCase implements UseCaseHandler<DisciplinePlayerR
             return PlayerUseCaseResponse.alreadyHadAYellowCard();
         } catch (PlayerNotActiveInMatchException e) {
             return PlayerUseCaseResponse.playerIsNotActiveInMatch();
+        } catch (MatchStatusException e) {
+            return PlayerUseCaseResponse.matchIsNotActive();
         }
     }
 
