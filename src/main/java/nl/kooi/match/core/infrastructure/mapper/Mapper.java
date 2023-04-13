@@ -3,6 +3,7 @@ package nl.kooi.match.core.infrastructure.mapper;
 
 import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.PlayerEvent;
+import nl.kooi.match.core.domain.Team;
 import nl.kooi.match.core.infrastructure.entity.MatchEntity;
 import nl.kooi.match.core.infrastructure.entity.PlayerEntity;
 import nl.kooi.match.core.infrastructure.entity.PlayerEventEntity;
@@ -37,9 +38,12 @@ public interface Mapper {
     }
 
     default String concatTeamNames(MatchEntity entity) {
-        return Stream.of(entity.getTeam1(), entity.getTeam2())
+        return concatTeamNames(entity.getTeam1().getName(), entity.getTeam2().getName());
+    }
+
+    default String concatTeamNames(String teamName1, String teamName2) {
+        return Stream.of(teamName1, teamName2)
                 .filter(Objects::nonNull)
-                .map(TeamEntity::getName)
                 .reduce("", (s1, s2) -> s1.equals("") ? s2 : s1.concat(" - ").concat(s2));
     }
 
@@ -56,4 +60,8 @@ public interface Mapper {
                 .map(id -> MatchEntity.builder().id(id).build())
                 .orElse(null);
     }
+
+    TeamEntity map(Team team);
+
+    Team map(TeamEntity team);
 }

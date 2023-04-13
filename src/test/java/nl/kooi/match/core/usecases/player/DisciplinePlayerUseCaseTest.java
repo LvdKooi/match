@@ -38,12 +38,12 @@ class DisciplinePlayerUseCaseTest {
         when(matchDao.findById(1L))
                 .thenReturn(Optional.of(match));
 
-        when(matchDao.save(any(Match.class))).thenReturn(match);
+        when(matchDao.update(any(Match.class))).thenReturn(match);
 
         assertThat(useCase.handle(new DisciplinePlayerRequest(1L, 1L, 2, CardType.YELLOW)).getResponseType())
                 .isEqualTo(ALREADY_HAD_A_YELLOW_CARD);
 
-        verify(matchDao, never()).save(any(Match.class));
+        verify(matchDao, never()).update(any(Match.class));
     }
 
     @Test
@@ -53,12 +53,12 @@ class DisciplinePlayerUseCaseTest {
         when(matchDao.findById(1L))
                 .thenReturn(Optional.of(match));
 
-        when(matchDao.save(any(Match.class))).thenReturn(match);
+        when(matchDao.update(any(Match.class))).thenReturn(match);
 
         assertThat(useCase.handle(new DisciplinePlayerRequest(1L, 1L, 2, CardType.YELLOW)).getResponseType())
                 .isEqualTo(PROCESSED_SUCCESSFULLY);
 
-        verify(matchDao, atMostOnce()).save(any(Match.class));
+        verify(matchDao, atMostOnce()).update(any(Match.class));
     }
 
     @Test
@@ -68,12 +68,12 @@ class DisciplinePlayerUseCaseTest {
         when(matchDao.findById(1L))
                 .thenReturn(Optional.of(match));
 
-        when(matchDao.save(any(Match.class))).thenReturn(match);
+        when(matchDao.update(any(Match.class))).thenReturn(match);
 
         assertThat(useCase.handle(new DisciplinePlayerRequest(1L, 1L, 2, CardType.RED)).getResponseType())
                 .isEqualTo(PROCESSED_SUCCESSFULLY);
 
-        verify(matchDao, atMostOnce()).save(any(Match.class));
+        verify(matchDao, atMostOnce()).update(any(Match.class));
     }
 
     @Test
@@ -83,12 +83,12 @@ class DisciplinePlayerUseCaseTest {
         when(matchDao.findById(1L))
                 .thenReturn(Optional.of(match));
 
-        when(matchDao.save(any(Match.class))).thenReturn(match);
+        when(matchDao.update(any(Match.class))).thenReturn(match);
 
         assertThat(useCase.handle(new DisciplinePlayerRequest(1L, 1L, 2, CardType.YELLOW)).getResponseType())
                 .isEqualTo(PLAYER_NOT_ACTIVE_IN_MATCH);
 
-        verify(matchDao, never()).save(any(Match.class));
+        verify(matchDao, never()).update(any(Match.class));
     }
 
     @Test
@@ -98,7 +98,7 @@ class DisciplinePlayerUseCaseTest {
         assertThat(useCase.handle(new DisciplinePlayerRequest(1L, 1L, 2, CardType.YELLOW)).getResponseType())
                 .isEqualTo(MATCH_NOT_FOUND);
 
-        verify(matchDao, never()).save(any(Match.class));
+        verify(matchDao, never()).update(any(Match.class));
     }
 
     @Test
@@ -106,11 +106,11 @@ class DisciplinePlayerUseCaseTest {
         var match = getDefaultMatchForPlayerWithIdAndMatchStatus(1L, MatchStatus.ANNOUNCED);
 
         when(matchDao.findById(1L)).thenReturn(Optional.of(match));
-        when(matchDao.save(any(Match.class))).thenReturn(match);
+        when(matchDao.update(any(Match.class))).thenReturn(match);
 
         assertThat(useCase.handle(new DisciplinePlayerRequest(1L, 1L, 2, CardType.RED)).getResponseType())
                 .isEqualTo(MATCH_NOT_ACTIVE);
 
-        verify(matchDao, never()).save(any(Match.class));
+        verify(matchDao, never()).update(any(Match.class));
     }
 }

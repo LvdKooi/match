@@ -35,7 +35,7 @@ public class DisciplinePlayerUseCase implements UseCaseHandler<DisciplinePlayerR
     private PlayerUseCaseResponse handlePlayerEvent(Match match, DisciplinePlayerRequest command) {
         try {
             match.addPLayerEvent(createPlayerEvent(command));
-            matchDao.save(match);
+            matchDao.update(match);
             return PlayerUseCaseResponse.successful();
         } catch (YellowCardException e) {
             return PlayerUseCaseResponse.alreadyHadAYellowCard();

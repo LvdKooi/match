@@ -33,7 +33,7 @@ public class LineUpPlayerUseCase implements UseCaseHandler<LineUpPlayerRequest, 
     private PlayerUseCaseResponse handlePlayerEvent(Match match, LineUpPlayerRequest command) {
         try {
             match.addPLayerEvent(createPlayerEvent(command));
-            matchDao.save(match);
+            matchDao.update(match);
             return PlayerUseCaseResponse.successful();
         } catch (LineUpNotAllowedException | MatchStatusException e) {
             return PlayerUseCaseResponse.lineUpNotAllowed();

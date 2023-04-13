@@ -39,18 +39,18 @@ class InjuredPlayerUseCaseTest {
                 .isNotNull()
                 .isEqualTo(MATCH_NOT_FOUND);
 
-        verify(matchDao, never()).save(any(Match.class));
+        verify(matchDao, never()).update(any(Match.class));
     }
 
     @Test
     void whenMatchHasNoPlayerEvents_thenPlayerNotActiveInMatchIsReturned() {
-        when(matchDao.findById(1L)).thenReturn(Optional.of(new Match(null, MatchStatus.STARTED, null, null)));
+        when(matchDao.findById(1L)).thenReturn(Optional.of(Match.createMatch(MatchStatus.STARTED, null, null)));
 
         assertThat(useCase.handle(getDefaultRequest()).getResponseType())
                 .isNotNull()
                 .isEqualTo(PLAYER_NOT_ACTIVE_IN_MATCH);
 
-        verify(matchDao, never()).save(any(Match.class));
+        verify(matchDao, never()).update(any(Match.class));
     }
 
     @Test
@@ -64,7 +64,7 @@ class InjuredPlayerUseCaseTest {
                 .isNotNull()
                 .isEqualTo(PLAYER_NOT_ACTIVE_IN_MATCH);
 
-        verify(matchDao, never()).save(any(Match.class));
+        verify(matchDao, never()).update(any(Match.class));
     }
 
     @Test
@@ -78,17 +78,17 @@ class InjuredPlayerUseCaseTest {
                 .isNotNull()
                 .isEqualTo(PLAYER_NOT_ACTIVE_IN_MATCH);
 
-        verify(matchDao, never()).save(any(Match.class));
+        verify(matchDao, never()).update(any(Match.class));
     }
 
     @Test
     void whenPlayerIsPartOfMatch_theSuccessfulIsReturned() {
         when(matchDao.findById(1L)).thenReturn(Optional.of(getDefaultMatchForPlayerWithId(1L)));
-        when(matchDao.save(any(Match.class))).thenReturn(getDefaultMatchForPlayerWithId(1L));
+        when(matchDao.update(any(Match.class))).thenReturn(getDefaultMatchForPlayerWithId(1L));
 
         assertThat(useCase.handle(getDefaultRequest()).getResponseType()).isNotNull().isEqualTo(PROCESSED_SUCCESSFULLY);
 
-        verify(matchDao, atMostOnce()).save(any(Match.class));
+        verify(matchDao, atMostOnce()).update(any(Match.class));
     }
 
     @Test
@@ -96,11 +96,11 @@ class InjuredPlayerUseCaseTest {
         var match = getDefaultMatchForPlayerWithIdAndMatchStatus(1L, MatchStatus.ANNOUNCED);
 
         when(matchDao.findById(1L)).thenReturn(Optional.of(match));
-        when(matchDao.save(any(Match.class))).thenReturn(match);
+        when(matchDao.update(any(Match.class))).thenReturn(match);
 
         assertThat(useCase.handle(getDefaultRequest()).getResponseType()).isNotNull().isEqualTo(MATCH_NOT_ACTIVE);
 
-        verify(matchDao, never()).save(any(Match.class));
+        verify(matchDao, never()).update(any(Match.class));
     }
 
     private static InjuredPlayerRequest getDefaultRequest() {

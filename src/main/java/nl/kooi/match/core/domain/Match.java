@@ -8,6 +8,7 @@ import nl.kooi.match.core.enums.MatchStatus;
 import nl.kooi.match.core.enums.PlayerEventType;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Optional;
@@ -18,7 +19,12 @@ import java.util.stream.Stream;
 
 
 @Validated
-public record Match(Long id, MatchStatus matchStatus, String matchName, Set<PlayerEvent> playerEvents) {
+public record Match(Long id,
+                    MatchStatus matchStatus,
+                    Instant startTimestamp,
+                    Instant endTimestamp,
+                    String matchName,
+                    Set<PlayerEvent> playerEvents) {
 
     public Match {
         if (playerEvents == null) {
@@ -26,6 +32,11 @@ public record Match(Long id, MatchStatus matchStatus, String matchName, Set<Play
             );
         }
     }
+
+    public static Match createMatch(MatchStatus status, Instant startTimestamp, String matchName) {
+        return new Match(null, status, startTimestamp, null, matchName, null);
+    }
+
 
     @Override
     public Set<PlayerEvent> playerEvents() {
@@ -46,7 +57,12 @@ public record Match(Long id, MatchStatus matchStatus, String matchName, Set<Play
             }
         }
 
+        removeFutureEvents(event.getPlayerId(), event.getMinute());
         this.playerEvents.add(event);
+    }
+
+    private void removeFutureEvents(Long playerId, int afterMinute) {
+        this.playerEvents.removeIf(event -> event.getPlayerId().equals(playerId) && event.getMinute() > afterMinute);
     }
 
     private void verifyIfMatchIsStarted() {

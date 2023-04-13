@@ -40,7 +40,7 @@ class LineUpPlayerUseCaseTest {
                 .isNotNull()
                 .isEqualTo(MATCH_NOT_FOUND);
 
-        verify(matchDao, never()).save(any(Match.class));
+        verify(matchDao, never()).update(any(Match.class));
     }
 
     @ParameterizedTest
@@ -52,7 +52,7 @@ class LineUpPlayerUseCaseTest {
                 .isNotNull()
                 .isEqualTo(LINE_UP_NOT_ALLOWED);
 
-        verify(matchDao, never()).save(any(Match.class));
+        verify(matchDao, never()).update(any(Match.class));
     }
 
     @ParameterizedTest
@@ -64,7 +64,7 @@ class LineUpPlayerUseCaseTest {
                 .isNotNull()
                 .isEqualTo(PROCESSED_SUCCESSFULLY);
 
-        verify(matchDao, atMostOnce()).save(any(Match.class));
+        verify(matchDao, atMostOnce()).update(any(Match.class));
     }
 
     @ParameterizedTest
@@ -81,7 +81,7 @@ class LineUpPlayerUseCaseTest {
                 .isNotNull()
                 .isEqualTo(PROCESSED_SUCCESSFULLY);
 
-        verify(matchDao, atMostOnce()).save(any(Match.class));
+        verify(matchDao, atMostOnce()).update(any(Match.class));
     }
 
     @ParameterizedTest
@@ -97,6 +97,6 @@ class LineUpPlayerUseCaseTest {
                 .isNotNull()
                 .isEqualTo(LINE_UP_NOT_ALLOWED);
 
-        verify(matchDao, never()).save(any(Match.class));
+        verify(matchDao, never()).update(any(Match.class));
     }
 }

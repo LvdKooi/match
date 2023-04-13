@@ -36,11 +36,11 @@ public class InjuredPlayerUseCase implements UseCaseHandler<InjuredPlayerRequest
     private PlayerUseCaseResponse handlePlayerEvent(Match match, InjuredPlayerRequest command) {
         try {
             match.addPLayerEvent(createPlayerEvent(command));
-            matchDao.save(match);
+            matchDao.update(match);
             return PlayerUseCaseResponse.successful();
         } catch (PlayerNotActiveInMatchException e) {
             return PlayerUseCaseResponse.playerIsNotActiveInMatch();
-        } catch (MatchStatusException e){
+        } catch (MatchStatusException e) {
             return PlayerUseCaseResponse.matchIsNotActive();
         }
     }

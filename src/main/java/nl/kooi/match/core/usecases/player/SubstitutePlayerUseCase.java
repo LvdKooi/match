@@ -52,7 +52,7 @@ public class SubstitutePlayerUseCase implements UseCaseHandler<SubstitutePlayerR
     private PlayerUseCaseResponse handleSubstituteEvent(Match match, SubstitutePlayerRequest command) {
         try {
             match.addPLayerEvent(createSubstituteEvent(command));
-            matchDao.save(match);
+            matchDao.update(match);
             return PlayerUseCaseResponse.successful();
         } catch (PlayerNotActiveInMatchException e) {
             return PlayerUseCaseResponse.playerIsNotActiveInMatch();
@@ -65,7 +65,7 @@ public class SubstitutePlayerUseCase implements UseCaseHandler<SubstitutePlayerR
     private PlayerUseCaseResponse handleLineUpEvent(Match match, SubstitutePlayerRequest command) {
         try {
             match.addPLayerEvent(createLineUpEvent(command));
-            matchDao.save(match);
+            matchDao.update(match);
             return PlayerUseCaseResponse.successful();
         } catch (LineUpNotAllowedException e) {
             return PlayerUseCaseResponse.lineUpNotAllowed();
