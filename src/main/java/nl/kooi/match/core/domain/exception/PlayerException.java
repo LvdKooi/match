@@ -5,8 +5,7 @@ public class PlayerException extends RuntimeException {
     public PlayerException(String msg) {
         super(msg);
     }
-
-
+    
     public static PlayerException notActiveInMatch() {
         return new PlayerNotActiveInMatchException("Player is currently not active in this match.");
     }

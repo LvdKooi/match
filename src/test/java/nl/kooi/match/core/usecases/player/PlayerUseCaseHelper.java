@@ -13,23 +13,23 @@ import java.util.Set;
 @UtilityClass
 public class PlayerUseCaseHelper {
 
-    public static Match getDefaultMatchForPlayerWithId(Long id) {
-        return getDefaultMatchForPlayerWithIdAndMatchStatus(id, MatchStatus.STARTED);
+    public static Match getDefaultMatchForPlayerWithId(Long playerId) {
+        return getDefaultMatchForPlayerWithIdAndMatchStatus(playerId, MatchStatus.STARTED);
     }
 
-    public static Match getDefaultMatchForPlayerWithIdAndMatchStatus(Long id, MatchStatus status) {
-        return getDefaultMatchForPlayerWithId(id, Collections.emptySet(), status);
+    public static Match getDefaultMatchForPlayerWithIdAndMatchStatus(Long playerId, MatchStatus status) {
+        return getDefaultMatchForPlayerWithId(playerId, Collections.emptySet(), status);
     }
 
-    public static Match getDefaultMatchForPlayerWithId(Long id, Set<PlayerEvent> additionalPlayerEvents, MatchStatus status) {
+    public static Match getDefaultMatchForPlayerWithId(Long playerId, Set<PlayerEvent> additionalPlayerEvents, MatchStatus status) {
         var playerEvents = new HashSet<PlayerEvent>();
-        playerEvents.add(PlayerEvent.builder().matchId(1L).minute(0).playerId(id).eventType(PlayerEventType.LINED_UP).build());
+        playerEvents.add(PlayerEvent.builder().matchId(1L).minute(0).playerId(playerId).eventType(PlayerEventType.LINED_UP).build());
         playerEvents.addAll(additionalPlayerEvents);
 
         return new Match(1L, status, null, playerEvents);
     }
 
-    public static Match getDefaultMatchForPlayerWithId(Long id, Set<PlayerEvent> additionalPlayerEvents) {
-        return getDefaultMatchForPlayerWithId(id, additionalPlayerEvents, MatchStatus.STARTED);
+    public static Match getDefaultMatchForPlayerWithId(Long playerId, Set<PlayerEvent> additionalPlayerEvents) {
+        return getDefaultMatchForPlayerWithId(playerId, additionalPlayerEvents, MatchStatus.STARTED);
     }
 }

@@ -95,7 +95,7 @@ public record Match(Long id, MatchStatus matchStatus, String matchName, Set<Play
         return match -> match.playerEvents().stream()
                 .filter(filterPlayerEventsById(event.getPlayerId()))
                 .filter(filterUntilMinuteInclusive(event.getMinute()))
-                .min(Comparator.naturalOrder())
+                .max(Comparator.naturalOrder())
                 .map(PlayerEvent::getEventType)
                 .map(type -> type == PlayerEventType.INJURED)
                 .orElse(false);
