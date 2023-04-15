@@ -1,4 +1,4 @@
-package nl.kooi.match.core.enums;
+package nl.kooi.match.enums;
 
 public enum ResponseType {
     PROCESSED_SUCCESSFULLY,
@@ -8,5 +8,7 @@ public enum ResponseType {
     MATCH_NOT_FOUND,
     PROCESSED_UNSUCCESSFULLY,
     MATCH_NOT_ACTIVE,
-    MATCH_REQUESTED_FOR_NON_EXISTING_TEAM
+    MATCH_REQUESTED_FOR_NON_EXISTING_TEAM,
+
+    NEW_MATCH_STATUS_NOT_ALLOWED
 }

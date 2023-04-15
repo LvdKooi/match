@@ -3,7 +3,7 @@ package nl.kooi.match.core.command;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import nl.kooi.match.core.enums.ResponseType;
+import nl.kooi.match.enums.ResponseType;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter

@@ -1,4 +1,4 @@
-package nl.kooi.match.core.domain.exception;
+package nl.kooi.match.exception;
 
 public class YellowCardException extends PlayerException {
     public YellowCardException(String msg) {

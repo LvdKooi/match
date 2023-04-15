@@ -1,8 +1,10 @@
 package nl.kooi.match.core.command;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.time.Instant;
 
-public record AnnounceMatchRequest(Instant startTimestamp,
-                                   Long idTeam1,
-                                   Long idTeam2) {
+public record AnnounceMatchRequest(@NotNull Instant startTimestamp,
+                                   @NotNull Long idTeam1,
+                                   @NotNull Long idTeam2) {
 }

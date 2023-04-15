@@ -1,11 +1,11 @@
-package nl.kooi.match.core.infrastructure;
+package nl.kooi.match.infrastructure;
 
 
 import lombok.RequiredArgsConstructor;
 import nl.kooi.match.core.domain.Team;
-import nl.kooi.match.core.infrastructure.mapper.Mapper;
-import nl.kooi.match.core.infrastructure.port.TeamDao;
-import nl.kooi.match.core.infrastructure.repository.TeamRepository;
+import nl.kooi.match.infrastructure.mapper.Mapper;
+import nl.kooi.match.infrastructure.port.TeamDao;
+import nl.kooi.match.infrastructure.repository.TeamRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

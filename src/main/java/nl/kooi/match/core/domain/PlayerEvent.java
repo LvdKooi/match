@@ -2,7 +2,7 @@ package nl.kooi.match.core.domain;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import nl.kooi.match.core.enums.PlayerEventType;
+import nl.kooi.match.enums.PlayerEventType;
 
 @Getter
 @Builder

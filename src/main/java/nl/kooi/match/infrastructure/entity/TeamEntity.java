@@ -1,4 +1,4 @@
-package nl.kooi.match.core.infrastructure.entity;
+package nl.kooi.match.infrastructure.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

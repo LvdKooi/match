@@ -3,8 +3,8 @@ package nl.kooi.match.core.usecases.player;
 import lombok.experimental.UtilityClass;
 import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.PlayerEvent;
-import nl.kooi.match.core.enums.MatchStatus;
-import nl.kooi.match.core.enums.PlayerEventType;
+import nl.kooi.match.enums.MatchStatus;
+import nl.kooi.match.enums.PlayerEventType;
 
 import java.util.Collections;
 import java.util.HashSet;

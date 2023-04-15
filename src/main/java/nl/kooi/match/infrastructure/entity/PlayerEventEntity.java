@@ -1,9 +1,9 @@
-package nl.kooi.match.core.infrastructure.entity;
+package nl.kooi.match.infrastructure.entity;
 
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
-import nl.kooi.match.core.enums.PlayerEventType;
+import nl.kooi.match.enums.PlayerEventType;
 
 @Entity
 @Getter

@@ -2,10 +2,10 @@ package nl.kooi.match.core.domain;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import nl.kooi.match.core.domain.exception.MatchStatusException;
-import nl.kooi.match.core.domain.exception.PlayerException;
-import nl.kooi.match.core.enums.MatchStatus;
-import nl.kooi.match.core.enums.PlayerEventType;
+import nl.kooi.match.enums.MatchStatus;
+import nl.kooi.match.enums.PlayerEventType;
+import nl.kooi.match.exception.MatchStatusException;
+import nl.kooi.match.exception.PlayerException;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.Instant;
@@ -35,6 +35,10 @@ public record Match(Long id,
 
     public static Match createMatch(MatchStatus status, Instant startTimestamp, String matchName) {
         return new Match(null, status, startTimestamp, null, matchName, null);
+    }
+
+    public  Match copyMatchWithStatus(MatchStatus status) {
+        return new Match(this.id, status, this.startTimestamp, this.endTimestamp, this.matchName, this.playerEvents);
     }
 
 

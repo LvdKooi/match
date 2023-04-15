@@ -1,9 +1,9 @@
-package nl.kooi.match.core.infrastructure.entity;
+package nl.kooi.match.infrastructure.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import nl.kooi.match.core.enums.MatchStatus;
+import nl.kooi.match.enums.MatchStatus;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;

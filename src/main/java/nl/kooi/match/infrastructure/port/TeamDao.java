@@ -1,4 +1,4 @@
-package nl.kooi.match.core.infrastructure.port;
+package nl.kooi.match.infrastructure.port;
 
 import nl.kooi.match.core.domain.Team;
 

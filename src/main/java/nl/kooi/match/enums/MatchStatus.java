@@ -1,13 +1,11 @@
-package nl.kooi.match.core.enums;
+package nl.kooi.match.enums;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
 import java.util.Set;
 
 @RequiredArgsConstructor
-@Getter
 public enum MatchStatus {
 
     FINISHED(Collections.emptySet()),
@@ -16,5 +14,9 @@ public enum MatchStatus {
     POSTPONED(Set.of(STARTED)),
     ANNOUNCED(Set.of(STARTED, CANCELLED, POSTPONED));
 
-    private final Set<MatchStatus> canAdvanceTo;
+    private final Set<MatchStatus> transitionalStatuses;
+
+    public boolean canTransitionTo(MatchStatus status) {
+        return transitionalStatuses.contains(status);
+    }
 }

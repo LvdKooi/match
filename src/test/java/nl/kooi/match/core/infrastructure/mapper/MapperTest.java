@@ -1,12 +1,14 @@
 package nl.kooi.match.core.infrastructure.mapper;
 
-import nl.kooi.match.core.infrastructure.entity.MatchEntity;
-import nl.kooi.match.core.infrastructure.entity.TeamEntity;
+import nl.kooi.match.infrastructure.entity.MatchEntity;
+import nl.kooi.match.infrastructure.entity.TeamEntity;
+import nl.kooi.match.infrastructure.mapper.Mapper;
+import nl.kooi.match.infrastructure.mapper.MapperImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import static nl.kooi.match.core.enums.MatchStatus.STARTED;
+import static nl.kooi.match.enums.MatchStatus.STARTED;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringJUnitConfig(MapperImpl.class)

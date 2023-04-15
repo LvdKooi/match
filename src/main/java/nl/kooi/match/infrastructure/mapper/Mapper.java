@@ -1,13 +1,13 @@
-package nl.kooi.match.core.infrastructure.mapper;
+package nl.kooi.match.infrastructure.mapper;
 
 
 import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.PlayerEvent;
 import nl.kooi.match.core.domain.Team;
-import nl.kooi.match.core.infrastructure.entity.MatchEntity;
-import nl.kooi.match.core.infrastructure.entity.PlayerEntity;
-import nl.kooi.match.core.infrastructure.entity.PlayerEventEntity;
-import nl.kooi.match.core.infrastructure.entity.TeamEntity;
+import nl.kooi.match.infrastructure.entity.MatchEntity;
+import nl.kooi.match.infrastructure.entity.PlayerEntity;
+import nl.kooi.match.infrastructure.entity.PlayerEventEntity;
+import nl.kooi.match.infrastructure.entity.TeamEntity;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 

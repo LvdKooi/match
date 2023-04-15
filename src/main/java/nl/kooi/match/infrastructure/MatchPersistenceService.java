@@ -1,14 +1,14 @@
-package nl.kooi.match.core.infrastructure;
+package nl.kooi.match.infrastructure;
 
 import lombok.RequiredArgsConstructor;
 import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.Team;
-import nl.kooi.match.core.domain.exception.NotFoundException;
-import nl.kooi.match.core.enums.MatchStatus;
-import nl.kooi.match.core.infrastructure.entity.MatchEntity;
-import nl.kooi.match.core.infrastructure.mapper.Mapper;
-import nl.kooi.match.core.infrastructure.port.MatchDao;
-import nl.kooi.match.core.infrastructure.repository.MatchRepository;
+import nl.kooi.match.exception.NotFoundException;
+import nl.kooi.match.enums.MatchStatus;
+import nl.kooi.match.infrastructure.entity.MatchEntity;
+import nl.kooi.match.infrastructure.mapper.Mapper;
+import nl.kooi.match.infrastructure.port.MatchDao;
+import nl.kooi.match.infrastructure.repository.MatchRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
