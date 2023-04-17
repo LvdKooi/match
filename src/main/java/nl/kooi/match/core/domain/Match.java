@@ -37,7 +37,7 @@ public record Match(Long id,
         return new Match(null, status, startTimestamp, null, matchName, null);
     }
 
-    public  Match copyMatchWithStatus(MatchStatus status) {
+    public Match copyMatchWithStatus(MatchStatus status) {
         return new Match(this.id, status, this.startTimestamp, this.endTimestamp, this.matchName, this.playerEvents);
     }
 
@@ -127,7 +127,9 @@ public record Match(Long id,
     }
 
     private static Predicate<Match> isPlayerCurrentlyPartOfMatch(PlayerEvent event) {
-        return match -> match.playerEvents.stream().anyMatch(isPlayerLinedUp()) &&
+        return match -> match.playerEvents.stream().filter(filterUntilMinuteInclusive(event.getMinute()))
+                .filter(filterPlayerEventsById(event.getPlayerId()))
+                .anyMatch(isPlayerLinedUp()) &&
                 match.playerEvents().stream()
                         .filter(filterUntilMinuteInclusive(event.getMinute()))
                         .filter(filterPlayerEventsById(event.getPlayerId()))
