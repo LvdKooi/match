@@ -1,6 +1,7 @@
 package nl.kooi.match.core.domain;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 import nl.kooi.match.enums.PlayerEventType;
 
@@ -20,6 +21,7 @@ public class PlayerEvent implements Comparable<PlayerEvent> {
     @NotNull
     private PlayerEventType eventType;
 
+    @Positive
     private int minute;
 
     @Override
