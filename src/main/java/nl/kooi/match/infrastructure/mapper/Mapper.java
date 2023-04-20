@@ -38,7 +38,10 @@ public interface Mapper {
     }
 
     default String concatTeamNames(MatchEntity entity) {
-        return concatTeamNames(entity.getTeam1().getName(), entity.getTeam2().getName());
+        return Stream.of(entity.getTeam1(), entity.getTeam2())
+                .filter(Objects::nonNull)
+                .map(TeamEntity::getName)
+                .reduce("", (s1, s2) -> s1.equals("") ? s2 : s1.concat(" - ").concat(s2));
     }
 
     default String concatTeamNames(String teamName1, String teamName2) {

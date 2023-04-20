@@ -1,6 +1,6 @@
 package nl.kooi.match.core.usecases.player;
 
-import nl.kooi.match.core.command.DisciplinePlayerRequest;
+import nl.kooi.match.core.command.player.DisciplinePlayerRequest;
 import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.PlayerEvent;
 import nl.kooi.match.enums.CardType;

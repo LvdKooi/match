@@ -1,6 +1,6 @@
 package nl.kooi.match.core.usecases.player;
 
-import nl.kooi.match.core.command.InjuredPlayerRequest;
+import nl.kooi.match.core.command.player.InjuredPlayerRequest;
 import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.PlayerEvent;
 import nl.kooi.match.enums.InjuryType;

@@ -3,8 +3,8 @@ package nl.kooi.match.infrastructure;
 import lombok.RequiredArgsConstructor;
 import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.Team;
-import nl.kooi.match.exception.NotFoundException;
 import nl.kooi.match.enums.MatchStatus;
+import nl.kooi.match.exception.NotFoundException;
 import nl.kooi.match.infrastructure.entity.MatchEntity;
 import nl.kooi.match.infrastructure.mapper.Mapper;
 import nl.kooi.match.infrastructure.port.MatchDao;
@@ -34,7 +34,7 @@ public class MatchPersistenceService implements MatchDao {
         return findById(match.id())
                 .map(matchExists -> mapper.map(match))
                 .map(matchRepository::save)
-                .map(mapper::map)
+                .map(saveSuccessful -> match)
                 .orElseThrow(() -> new NotFoundException("Update for a match that is unknown"));
     }
 

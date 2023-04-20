@@ -1,4 +1,4 @@
-package nl.kooi.match.core.command;
+package nl.kooi.match.core.command.player;
 
 import nl.kooi.match.enums.CardType;
 

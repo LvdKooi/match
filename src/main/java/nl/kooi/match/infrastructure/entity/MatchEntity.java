@@ -19,7 +19,6 @@ public class MatchEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
     private Long id;
 
     @CreationTimestamp
@@ -27,7 +26,7 @@ public class MatchEntity {
 
     @NotNull
     private Instant startTimestamp;
-    private Instant endTimeStamp;
+    private Instant endTimestamp;
 
     @NotNull
     @Enumerated(value = EnumType.STRING)
@@ -38,6 +37,6 @@ public class MatchEntity {
     @OneToOne
     private TeamEntity team2;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PlayerEventEntity> playerEvents;
 }

@@ -2,8 +2,8 @@ package nl.kooi.match.core.usecases.match;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import nl.kooi.match.core.command.EndMatchUseCaseRequest;
-import nl.kooi.match.core.command.MatchUseCaseResponse;
+import nl.kooi.match.core.command.match.EndMatchUseCaseRequest;
+import nl.kooi.match.core.command.match.MatchUseCaseResponse;
 import nl.kooi.match.core.usecases.UseCaseHandler;
 import nl.kooi.match.enums.MatchStatus;
 import nl.kooi.match.infrastructure.port.MatchDao;
