@@ -7,10 +7,15 @@ import nl.kooi.match.core.usecases.player.InjuredPlayerUseCase;
 import nl.kooi.match.core.usecases.player.LineUpPlayerUseCase;
 import nl.kooi.match.core.usecases.player.SubstitutePlayerUseCase;
 import nl.kooi.match.enums.ResponseType;
+import nl.kooi.match.exception.NotFoundException;
 import nl.kooi.match.exception.PlayerEventException;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.concurrent.Callable;
+
+import static nl.kooi.match.enums.ResponseType.MATCH_NOT_FOUND;
+import static nl.kooi.match.enums.ResponseType.PROCESSED_SUCCESSFULLY;
 
 @Component
 @RequiredArgsConstructor
@@ -38,10 +43,17 @@ public class UseCaseHandler {
     }
 
     private void handleRequest(Callable<PlayerUseCaseResponse> callable) throws Exception {
-        var response = callable.call();
+        Optional.ofNullable(callable.call())
+                .map(PlayerUseCaseResponse::getResponseType)
+                .filter(responseType -> responseType != PROCESSED_SUCCESSFULLY)
+                .ifPresent(UseCaseHandler::handleResponseType);
+    }
 
-        if (response.getResponseType() != ResponseType.PROCESSED_SUCCESSFULLY) {
-            throw new PlayerEventException(String.format("Event is not valid: %s", response.getResponseType()));
+    private static void handleResponseType(ResponseType responseType) {
+        if (responseType == MATCH_NOT_FOUND) {
+            throw new NotFoundException(MATCH_NOT_FOUND.name());
+        } else {
+            throw new PlayerEventException(String.format("Event is not valid: %s", responseType));
         }
     }
 }
