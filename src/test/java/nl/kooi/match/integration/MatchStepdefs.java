@@ -6,11 +6,13 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import nl.kooi.match.core.command.match.StartMatchRequest;
 import nl.kooi.match.core.command.player.DisciplinePlayerRequest;
+import nl.kooi.match.core.command.player.InjuredPlayerRequest;
 import nl.kooi.match.core.command.player.LineUpPlayerRequest;
 import nl.kooi.match.core.command.player.PlayerUseCaseResponse;
 import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.usecases.match.StartMatchUseCase;
 import nl.kooi.match.core.usecases.player.DisciplinePlayerUseCase;
+import nl.kooi.match.core.usecases.player.InjuredPlayerUseCase;
 import nl.kooi.match.core.usecases.player.LineUpPlayerUseCase;
 import nl.kooi.match.enums.CardType;
 import nl.kooi.match.enums.MatchStatus;
@@ -28,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static nl.kooi.match.enums.InjuryType.INJURED;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -48,6 +51,9 @@ public class MatchStepdefs extends CucumberBaseIT {
 
     @Autowired
     private LineUpPlayerUseCase lineUpPlayerUseCase;
+
+    @Autowired
+    private InjuredPlayerUseCase injuredPlayerUseCase;
 
     @Autowired
     private MatchDao matchDao;
@@ -113,5 +119,17 @@ public class MatchStepdefs extends CucumberBaseIT {
         var finishedMatch = match.copyMatchWithStatus(MatchStatus.FINISHED);
 
         matchDao.update(finishedMatch);
+    }
+
+
+    @When("player {word} becomes injured in minute {int}")
+    @Given("player {word} became injured in minute {int}")
+    public void playerBecomesInjured(String name, int minute) {
+        playerUseCaseResponse = injuredPlayerUseCase.handle(new InjuredPlayerRequest(playersByName.get(name).getId(), match.id(), minute, INJURED));
+    }
+
+    @When("a player that is not part of the match becomes injured at minute {int}")
+    public void aPlayerThatIsNotPartOfTheMatchBecomesInjuredAtMinuteInt(int minute) {
+        playerUseCaseResponse = injuredPlayerUseCase.handle(new InjuredPlayerRequest(10000L, match.id(), minute, INJURED));
     }
 }
