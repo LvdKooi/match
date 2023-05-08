@@ -13,6 +13,7 @@ import nl.kooi.match.core.usecases.match.StartMatchUseCase;
 import nl.kooi.match.core.usecases.player.DisciplinePlayerUseCase;
 import nl.kooi.match.core.usecases.player.LineUpPlayerUseCase;
 import nl.kooi.match.enums.CardType;
+import nl.kooi.match.enums.MatchStatus;
 import nl.kooi.match.enums.ResponseType;
 import nl.kooi.match.infrastructure.entity.PlayerEntity;
 import nl.kooi.match.infrastructure.entity.TeamEntity;
@@ -90,8 +91,27 @@ public class MatchStepdefs extends CucumberBaseIT {
     }
 
     @When("player {word} gets a {word} card at minute {int}")
+    @Given("player {word} got a {word} card at minute {int}")
     public void playerRonaldoGetsAYellowCardAtMinute(String playerName, String cardType, int minute) {
+        playerUseCaseResponse = disciplinePlayerUseCase.handle(new DisciplinePlayerRequest(playersByName.get(playerName).getId(), match.id(), minute, CardType.valueOf(cardType)));
+    }
+
+    @When("a player that is not part of the match gets a {word} card at minute {int}")
+    public void playerRonaldoGetsAYellowCardAtMinute(String cardType, int minute) {
         var card = CardType.valueOf(cardType.toUpperCase());
-        playerUseCaseResponse = disciplinePlayerUseCase.handle(new DisciplinePlayerRequest(playersByName.get(playerName).getId(), match.id(), minute, card));
+        playerUseCaseResponse = disciplinePlayerUseCase.handle(new DisciplinePlayerRequest(10000L, match.id(), minute, card));
+    }
+
+    @Then("an error is shown stating: {string}")
+    public void anErrorIsShownStatingPlayerIsCurrentlyNotInMatch(String msg) {
+        assertThat(playerUseCaseResponse.getResponseType().name()).isEqualTo(msg);
+
+    }
+
+    @And("this match has already ended")
+    public void thisMatchHasAlreadyEnded() {
+        var finishedMatch = match.copyMatchWithStatus(MatchStatus.FINISHED);
+
+        matchDao.update(finishedMatch);
     }
 }
