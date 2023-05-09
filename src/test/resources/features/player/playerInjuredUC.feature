@@ -13,7 +13,7 @@ Feature: the player is injured use case
   Scenario: A player that is not playing in the match gets injured
     Given this match is currently taking place
     When a player that is not part of the match becomes injured at minute 0
-    Then an error is shown stating: "PLAYER_NOT_ACTIVE_IN_MATCH"
+    Then an error is shown stating: "Event is not valid: PLAYER_NOT_ACTIVE_IN_MATCH"
 
   Scenario: A player that is was already injured before gets injured again
     Given this match is currently taking place
@@ -24,10 +24,10 @@ Feature: the player is injured use case
   Scenario: A player becomes injured while match has not started yet
     Given team1 has a player Ronaldo
     When player Ronaldo becomes injured in minute 1
-    Then an error is shown stating: "MATCH_NOT_ACTIVE"
+    Then an error is shown stating: "Event is not valid: MATCH_NOT_ACTIVE"
 
   Scenario: A player becomes injured after match has taken place
     Given this match has already ended
     And team1 has a player Ronaldo
     When player Ronaldo becomes injured in minute 1
-    Then an error is shown stating: "MATCH_NOT_ACTIVE"
+    Then an error is shown stating: "Event is not valid: MATCH_NOT_ACTIVE"

@@ -10,5 +10,5 @@ import nl.kooi.match.enums.CardType;
 public class DisciplineEventDto extends PlayerEventRequestDto {
 
     @NotNull
-    private CardType cardType;
+    private CardType card;
 }
