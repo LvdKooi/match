@@ -5,7 +5,6 @@ import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.PlayerEvent;
 import nl.kooi.match.enums.PlayerEventType;
 import nl.kooi.match.infrastructure.port.MatchDao;
-import nl.kooi.match.infrastructure.port.TeamDao;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -31,9 +30,6 @@ class SubstitutePlayerUseCaseTest {
     @MockBean
     private MatchDao matchDao;
 
-    @MockBean
-    private TeamDao teamDao;
-
     @Captor
     private ArgumentCaptor<Match> matchArgumentCaptor;
 
@@ -54,7 +50,7 @@ class SubstitutePlayerUseCaseTest {
         var match = getDefaultMatchForPlayerWithId(1L);
 
         when(matchDao.findById(1L)).thenReturn(Optional.of(match));
-        when(teamDao.isPlayerPartOfTeams(2L, "team1", "team2")).thenReturn(true);
+        when(matchDao.isPlayerPartOfMatch(2L, 1L)).thenReturn(true);
 
         var response = useCase.handle(new SubstitutePlayerRequest(1L, 1L, 2L, 10));
 
@@ -77,7 +73,7 @@ class SubstitutePlayerUseCaseTest {
         var match = getDefaultMatchForPlayerWithId(3L);
 
         when(matchDao.findById(1L)).thenReturn(Optional.of(match));
-        when(teamDao.isPlayerPartOfTeams(2L,"team1", "team2")).thenReturn(true);
+        when(matchDao.isPlayerPartOfMatch(2L, 1L)).thenReturn(true);
 
         var response = useCase.handle(new SubstitutePlayerRequest(1L, 1L, 2L, 10));
 

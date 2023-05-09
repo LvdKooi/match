@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -30,26 +31,28 @@ public class MatchPersistenceService implements MatchDao {
     }
 
     @Override
-    @Transactional
-    public Match update(Match match) {
-
-        var matchOptional = matchRepository.findById(match.id());
-
-//        TODO: refactor me!
-
-        if (matchOptional.isPresent()) {
-            var matchEntity = matchOptional.get();
-            var team1 = matchEntity.getTeam1();
-            var team2 = matchEntity.getTeam2();
-            return matchOptional.map(matchExists -> mapper.map(match, Pair.of(team1, team2)))
-                    .map(matchRepository::save)
-                    .map(saveSuccessful -> match)
-                    .orElseThrow(() -> new NotFoundException("Update for a match that is unknown"));
-        }
-        return null;
+    public boolean isPlayerPartOfMatch(Long playerId, Long matchId) {
+        return matchRepository
+                .findById(matchId)
+                .stream()
+                .flatMap(match -> Stream.of(match.getTeam1(), match.getTeam2()))
+                .flatMap(team -> team.getPlayers().stream())
+                .anyMatch(player -> player.getId().equals(playerId));
     }
 
     @Override
+    @Transactional
+    public Match update(Match match) {
+        return matchRepository
+                .findById(match.id())
+                .map(m -> mapper.map(match, Pair.of(m.getTeam1(), m.getTeam2())))
+                .map(matchRepository::save)
+                .map(success -> match)
+                .orElseThrow(() -> new NotFoundException("Match not found"));
+    }
+
+    @Override
+    @Transactional
     public Match moveToStatus(Long matchId, MatchStatus matchStatus) {
         return matchRepository.findById(matchId)
                 .map(match -> {

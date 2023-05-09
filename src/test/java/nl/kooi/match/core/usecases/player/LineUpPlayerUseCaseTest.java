@@ -6,7 +6,6 @@ import nl.kooi.match.core.domain.PlayerEvent;
 import nl.kooi.match.enums.MatchStatus;
 import nl.kooi.match.enums.PlayerEventType;
 import nl.kooi.match.infrastructure.port.MatchDao;
-import nl.kooi.match.infrastructure.port.TeamDao;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -17,9 +16,9 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import java.util.Optional;
 import java.util.Set;
 
-import static nl.kooi.match.enums.ResponseType.*;
 import static nl.kooi.match.core.usecases.player.PlayerUseCaseHelper.getDefaultMatchForPlayerWithId;
 import static nl.kooi.match.core.usecases.player.PlayerUseCaseHelper.getDefaultMatchForPlayerWithIdAndMatchStatus;
+import static nl.kooi.match.enums.ResponseType.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -33,8 +32,6 @@ class LineUpPlayerUseCaseTest {
     @MockBean
     private MatchDao matchDao;
 
-    @MockBean
-    private TeamDao teamDao;
 
     @Test
     void whenMatchIsUnknown_thenAMatchNotFoundStatusIsReturned() {
@@ -63,7 +60,7 @@ class LineUpPlayerUseCaseTest {
     @EnumSource(value = MatchStatus.class, names = {"ANNOUNCED", "STARTED"})
     void whenMatchStatusAllowsForLineUp_AndPlayerIsNotLinedUpYet_thenSuccessfulIsReturned(MatchStatus status) {
         when(matchDao.findById(1L)).thenReturn(Optional.of(getDefaultMatchForPlayerWithIdAndMatchStatus(1L, status)));
-        when(teamDao.isPlayerPartOfTeams(2L,"team1", "team2")).thenReturn(true);
+        when(matchDao.isPlayerPartOfMatch(2L, 1L)).thenReturn(true);
 
         assertThat(useCase.handle(new LineUpPlayerRequest(2L, 1L, 0)).getResponseType())
                 .isNotNull()
@@ -80,7 +77,8 @@ class LineUpPlayerUseCaseTest {
         var match = getDefaultMatchForPlayerWithId(2L, additionalEvents, status);
 
         when(matchDao.findById(1L)).thenReturn(Optional.of(match));
-        when(teamDao.isPlayerPartOfTeams(2L,"team1", "team2")).thenReturn(true);
+        when(matchDao.isPlayerPartOfMatch(2L, 1L)).thenReturn(true);
+
 
         assertThat(useCase.handle(new LineUpPlayerRequest(2L, 1L, 3)).getResponseType())
                 .isNotNull()
