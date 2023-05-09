@@ -26,7 +26,7 @@ public class PlayerUseCaseHelper {
         playerEvents.add(PlayerEvent.builder().matchId(1L).minute(0).playerId(playerId).eventType(PlayerEventType.LINED_UP).build());
         playerEvents.addAll(additionalPlayerEvents);
 
-        return new Match(1L, status, null, null, null, playerEvents);
+        return new Match(1L, status, null, null, "team1 - team2", playerEvents);
     }
 
     public static Match getDefaultMatchForPlayerWithId(Long playerId, Set<PlayerEvent> additionalPlayerEvents) {

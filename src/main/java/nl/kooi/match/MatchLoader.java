@@ -1,5 +1,6 @@
 package nl.kooi.match;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import nl.kooi.match.core.command.match.AnnounceMatchRequest;
 import nl.kooi.match.core.command.match.StartMatchRequest;
@@ -27,10 +28,14 @@ public class MatchLoader implements CommandLineRunner {
     private final PlayerRepository playerRepository;
 
     @Override
+    @Transactional
     public void run(String... args) {
         var team1 = teamRepository.save(TeamEntity.builder().name("AJAX").build());
         var team2 = teamRepository.save(TeamEntity.builder().name("FEYENOORD").build());
-        var player1 = playerRepository.save(PlayerEntity.builder().team(team1).build());
+        var player1 = playerRepository.save(PlayerEntity.builder().build());
+        team1.getPlayers().add(player1);
+        teamRepository.save(team1);
+
 
         var response = announceMatchUseCase.handle(new AnnounceMatchRequest(Instant.now().plus(1, ChronoUnit.MINUTES), team1.getId(), team2.getId()));
         startMatchUseCase.handle(new StartMatchRequest(response.matchId()));

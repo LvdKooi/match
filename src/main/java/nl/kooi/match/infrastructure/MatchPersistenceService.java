@@ -9,6 +9,7 @@ import nl.kooi.match.infrastructure.entity.MatchEntity;
 import nl.kooi.match.infrastructure.mapper.Mapper;
 import nl.kooi.match.infrastructure.port.MatchDao;
 import nl.kooi.match.infrastructure.repository.MatchRepository;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,10 +32,32 @@ public class MatchPersistenceService implements MatchDao {
     @Override
     @Transactional
     public Match update(Match match) {
-        return findById(match.id())
-                .map(matchExists -> mapper.map(match))
+
+        var matchOptional = matchRepository.findById(match.id());
+
+//        TODO: refactor me!
+
+        if (matchOptional.isPresent()) {
+            var matchEntity = matchOptional.get();
+            var team1 = matchEntity.getTeam1();
+            var team2 = matchEntity.getTeam2();
+            return matchOptional.map(matchExists -> mapper.map(match, Pair.of(team1, team2)))
+                    .map(matchRepository::save)
+                    .map(saveSuccessful -> match)
+                    .orElseThrow(() -> new NotFoundException("Update for a match that is unknown"));
+        }
+        return null;
+    }
+
+    @Override
+    public Match moveToStatus(Long matchId, MatchStatus matchStatus) {
+        return matchRepository.findById(matchId)
+                .map(match -> {
+                    match.setMatchStatus(matchStatus);
+                    return match;
+                })
                 .map(matchRepository::save)
-                .map(saveSuccessful -> match)
+                .map(mapper::map)
                 .orElseThrow(() -> new NotFoundException("Update for a match that is unknown"));
     }
 

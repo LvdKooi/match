@@ -7,11 +7,12 @@ import nl.kooi.match.core.command.player.LineUpPlayerRequest;
 import nl.kooi.match.core.command.player.PlayerUseCaseResponse;
 import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.PlayerEvent;
+import nl.kooi.match.core.usecases.UseCaseHandler;
+import nl.kooi.match.enums.PlayerEventType;
 import nl.kooi.match.exception.LineUpNotAllowedException;
 import nl.kooi.match.exception.MatchStatusException;
-import nl.kooi.match.enums.PlayerEventType;
 import nl.kooi.match.infrastructure.port.MatchDao;
-import nl.kooi.match.core.usecases.UseCaseHandler;
+import nl.kooi.match.infrastructure.port.TeamDao;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
@@ -22,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 public class LineUpPlayerUseCase implements UseCaseHandler<LineUpPlayerRequest, PlayerUseCaseResponse> {
 
     private final MatchDao matchDao;
+    private final TeamDao teamDao;
 
     @Override
     public PlayerUseCaseResponse handle(@Valid LineUpPlayerRequest command) {
@@ -32,11 +34,21 @@ public class LineUpPlayerUseCase implements UseCaseHandler<LineUpPlayerRequest, 
 
     private PlayerUseCaseResponse handlePlayerEvent(Match match, LineUpPlayerRequest command) {
         try {
+            verifyIfPlayerPartOfTeams(match, command);
+
             match.addPLayerEvent(createPlayerEvent(command));
             matchDao.update(match);
             return PlayerUseCaseResponse.successful();
         } catch (LineUpNotAllowedException | MatchStatusException e) {
             return PlayerUseCaseResponse.lineUpNotAllowed();
+        }
+    }
+
+    private void verifyIfPlayerPartOfTeams(Match match, LineUpPlayerRequest command) {
+        var matches = match.matchName().split(" - ");
+
+        if (!teamDao.isPlayerPartOfTeams(command.playerId(), matches[0], matches[1])) {
+            throw new LineUpNotAllowedException("Player is not part of the teams that are in match");
         }
     }
 

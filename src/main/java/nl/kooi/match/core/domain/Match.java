@@ -37,11 +37,6 @@ public record Match(Long id,
         return new Match(null, status, startTimestamp, null, matchName, null);
     }
 
-    public Match copyMatchWithStatus(MatchStatus status) {
-        return new Match(this.id, status, this.startTimestamp, this.endTimestamp, this.matchName, this.playerEvents);
-    }
-
-
     @Override
     public Set<PlayerEvent> playerEvents() {
         return Set.copyOf(playerEvents);

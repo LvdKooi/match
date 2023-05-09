@@ -1,51 +1,43 @@
-#Feature: the player substitute use case
-#
-#  Scenario: A player that is currently in the match gets substituted
-#    Given a match that is currently taking place
-#    And this match is between team1 and team2
-#    And team1 has a player Ronaldo
-#    When player Ronaldo is substituted by player Messi
-#    Then player Ronaldo is not playing in the match anymore
-#    And player Messi is playing in the match
-#
-#  Scenario: A player that is not playing in the match gets substituted
-#    Given a match that is currently taking place
-#    And this match is between team1 and team2
-#    When player Ronaldo is substituted by player Messi
-#    Then an error is shown stating: Player is currently not in match
-#    And the player Ronaldo is still not part of the match
-#    And the player Messi is still not part of the match
-#
-#  Scenario: A player that was already substituted gets substituted again
-#    Given a match that is currently taking place
-#    And this match is between team1 and team2
-#    And team1 has a player Ronaldo
-#    And player Ronaldo is substituted by player Messi
-#    When player Ronaldo is substituted by player Messi
-#    Then an error is shown stating: Player is currently not in match
-#    And the player Ronaldo is still not part of the match
-#    And the player Messi is still part of the match
-#
-#  Scenario: A player that is currently in the match gets substituted by another player that is currently in the match
-#    Given a match that is currently taking place
-#    And this match is between team1 and team2
-#    And team1 has a player Ronaldo
-#    And team1 has a player Messi
-#    When player Ronaldo is substituted by player Messi
-#    Then an error is shown stating: Both players are already in the match
-#    And player Ronaldo is still part of the match
-#    And player Messi is still part of the match
-#
-#  Scenario: A player gets substituted while match has not started yet
-#    Given a match that is still to be taken place
-#    And this match is between team1 and team2
-#    And team1 has a player Ronaldo
-#    When player Ronaldo is substituted by player Messi
-#    Then an error is shown stating: Cannot add playerEvent since match is not active
-#
-#  Scenario: A player gets substituted after match has taken place
-#    Given a match that has already taken place
-#    And this match is between team1 and team2
-#    And team1 has a player Ronaldo
-#    When player Ronaldo is substituted by player Messi
-#    Then an error is shown stating: Cannot add playerEvent since match is not active
+Feature: the player substitute use case
+
+  Background:
+    Given a match between team1 and team2
+    And team1 has a player Ronaldo
+    And player Ronaldo is currently lined up
+
+  Scenario: A player that is currently in the match gets substituted
+    Given team1 has a player Messi
+    And this match is currently taking place
+    When player Ronaldo is substituted by player Messi at minute 0
+    Then the request is handled successfully
+
+  Scenario: A player that is not playing in the match gets substituted
+    Given this match is currently taking place
+    When player Ronaldo is substituted by a player that is not part of the match at minute 0
+    Then an error is shown stating: "LINE_UP_NOT_ALLOWED"
+
+
+  Scenario: A player that was already substituted gets substituted again
+    Given team1 has a player Messi
+    And this match is currently taking place
+    And player Ronaldo is substituted by player Messi at minute 0
+    When player Ronaldo is substituted by player Messi at minute 2
+    Then an error is shown stating: "PROCESSED_UNSUCCESSFULLY"
+
+  Scenario: A player that is currently in the match gets substituted by another player that is currently in the match
+    Given team1 has a player Messi
+    And player Messi is currently lined up
+    And this match is currently taking place
+    When player Ronaldo is substituted by player Messi at minute 2
+    Then an error is shown stating: "LINE_UP_NOT_ALLOWED"
+
+  Scenario: A player gets substituted while match has not started yet
+    Given team1 has a player Messi
+    When player Ronaldo is substituted by player Messi at minute 0
+    Then an error is shown stating: "MATCH_NOT_ACTIVE"
+
+  Scenario: A player gets substituted after match has taken place
+    Given team1 has a player Messi
+    And this match has already ended
+    When player Ronaldo is substituted by player Messi at minute 0
+    Then an error is shown stating: "MATCH_NOT_ACTIVE"

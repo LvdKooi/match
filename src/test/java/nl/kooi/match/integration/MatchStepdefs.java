@@ -1,29 +1,33 @@
 package nl.kooi.match.integration;
 
+import io.cucumber.java.After;
+import io.cucumber.java.AfterStep;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import nl.kooi.match.core.command.match.EndMatchUseCaseRequest;
 import nl.kooi.match.core.command.match.StartMatchRequest;
-import nl.kooi.match.core.command.player.DisciplinePlayerRequest;
-import nl.kooi.match.core.command.player.InjuredPlayerRequest;
-import nl.kooi.match.core.command.player.LineUpPlayerRequest;
-import nl.kooi.match.core.command.player.PlayerUseCaseResponse;
+import nl.kooi.match.core.command.player.*;
 import nl.kooi.match.core.domain.Match;
+import nl.kooi.match.core.usecases.match.EndMatchUseCase;
 import nl.kooi.match.core.usecases.match.StartMatchUseCase;
 import nl.kooi.match.core.usecases.player.DisciplinePlayerUseCase;
 import nl.kooi.match.core.usecases.player.InjuredPlayerUseCase;
 import nl.kooi.match.core.usecases.player.LineUpPlayerUseCase;
+import nl.kooi.match.core.usecases.player.SubstitutePlayerUseCase;
 import nl.kooi.match.enums.CardType;
-import nl.kooi.match.enums.MatchStatus;
 import nl.kooi.match.enums.ResponseType;
 import nl.kooi.match.infrastructure.entity.PlayerEntity;
 import nl.kooi.match.infrastructure.entity.TeamEntity;
 import nl.kooi.match.infrastructure.mapper.Mapper;
 import nl.kooi.match.infrastructure.port.MatchDao;
+import nl.kooi.match.infrastructure.repository.MatchRepository;
 import nl.kooi.match.infrastructure.repository.PlayerRepository;
 import nl.kooi.match.infrastructure.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -65,10 +69,28 @@ public class MatchStepdefs extends CucumberBaseIT {
     private PlayerRepository playerRepository;
 
     @Autowired
+    private MatchRepository matchRepository;
+
+
+    @Autowired
     private StartMatchUseCase startMatchUseCase;
 
     @Autowired
+    private EndMatchUseCase endMatchUseCase;
+
+    @Autowired
+    private SubstitutePlayerUseCase substitutePlayerUseCase;
+
+    @Autowired
     private Mapper mapper;
+
+    @After
+    public void setUp() {
+        playersByName.clear();
+        matchRepository.deleteAll();
+        teamRepository.deleteAll();
+        playerRepository.deleteAll();
+    }
 
     @Given("a match between team1 and team2")
     public void aMatchBetweenTeamAndTeam() {
@@ -83,9 +105,16 @@ public class MatchStepdefs extends CucumberBaseIT {
     }
 
     @And("team{int} has a player {word}")
-    public void teamHasAPlayerRonaldo(int teamNumber, String playerName) {
-        playersByName.put(playerName, playerRepository.save(PlayerEntity.builder().team(teamNumber == 1 ? team1 : team2).build()));
-        lineUpPlayerUseCase.handle(new LineUpPlayerRequest(playersByName.get(playerName).getId(), match.id(), 0));
+    @Transactional
+    public void teamHasAPlayerNamed(int teamNumber, String playerName) {
+        var team = teamRepository.findByName(teamNumber == 1 ? "team1" : "team2").get();
+
+        var player = playerRepository.save(PlayerEntity.builder().name(playerName).build());
+
+        playersByName.put(playerName, player);
+
+        team.getPlayers().add(player);
+        teamRepository.save(team);
     }
 
     @Then("the request is handled successfully")
@@ -116,9 +145,7 @@ public class MatchStepdefs extends CucumberBaseIT {
 
     @And("this match has already ended")
     public void thisMatchHasAlreadyEnded() {
-        var finishedMatch = match.copyMatchWithStatus(MatchStatus.FINISHED);
-
-        matchDao.update(finishedMatch);
+        endMatchUseCase.handle(new EndMatchUseCaseRequest(match.id()));
     }
 
 
@@ -131,5 +158,20 @@ public class MatchStepdefs extends CucumberBaseIT {
     @When("a player that is not part of the match becomes injured at minute {int}")
     public void aPlayerThatIsNotPartOfTheMatchBecomesInjuredAtMinuteInt(int minute) {
         playerUseCaseResponse = injuredPlayerUseCase.handle(new InjuredPlayerRequest(10000L, match.id(), minute, INJURED));
+    }
+
+    @And("player {word} is currently lined up")
+    public void playerRonaldoIsCurrentlyLinedUp(String playerName) {
+        lineUpPlayerUseCase.handle(new LineUpPlayerRequest(playersByName.get(playerName).getId(), match.id(), 0));
+    }
+
+    @When("player {word} is substituted by player {word} at minute {int}")
+    public void playerRonaldoIsSubstitutedByPlayerMessi(String player1, String player2, int minute) {
+        playerUseCaseResponse = substitutePlayerUseCase.handle(new SubstitutePlayerRequest(playersByName.get(player1).getId(), match.id(), playersByName.get(player2).getId(), minute));
+    }
+
+    @When("player {word} is substituted by a player that is not part of the match at minute {int}")
+    public void playerRonaldoIsSubstitutedByAPlayerThatIsNotPartOfTheMatchAtMinute(String playerName, int minute) {
+        playerUseCaseResponse = substitutePlayerUseCase.handle(new SubstitutePlayerRequest(playersByName.get(playerName).getId(), match.id(), 10000L, minute));
     }
 }

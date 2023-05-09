@@ -4,6 +4,7 @@ Feature: the player substitute use case
     Given a match between team1 and team2
     And this match is currently taking place
     And team1 has a player Ronaldo
+    And player Ronaldo is currently lined up
 
   Scenario Outline: A player that is currently in the match gets a valid card
     When player Ronaldo gets a <card_type> card at minute 0
@@ -37,8 +38,7 @@ Feature: the player substitute use case
     Then an error is shown stating: "PLAYER_NOT_ACTIVE_IN_MATCH"
 
   Scenario: A player gets disciplined after match has taken place
-    Given a match between team1 and team2
-    And this match has already ended
+    Given this match has already ended
     And team1 has a player Ronaldo
     Given player Ronaldo got a RED card at minute 0
     Then an error is shown stating: "MATCH_NOT_ACTIVE"

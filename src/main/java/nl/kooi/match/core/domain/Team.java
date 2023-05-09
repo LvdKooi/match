@@ -1,4 +1,6 @@
 package nl.kooi.match.core.domain;
 
-public record Team(Long id, String name) {
+import java.util.Set;
+
+public record Team(Long id, String name, Set<Player> players) {
 }

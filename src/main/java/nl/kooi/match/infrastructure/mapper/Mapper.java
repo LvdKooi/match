@@ -8,8 +8,8 @@ import nl.kooi.match.infrastructure.entity.MatchEntity;
 import nl.kooi.match.infrastructure.entity.PlayerEntity;
 import nl.kooi.match.infrastructure.entity.PlayerEventEntity;
 import nl.kooi.match.infrastructure.entity.TeamEntity;
-import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
+import org.springframework.data.util.Pair;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -29,7 +29,16 @@ public interface Mapper {
     @Mapping(target = "matchName", expression = "java(determineMatchName(entity))")
     Match map(MatchEntity entity);
 
-    MatchEntity map(Match match);
+    @Mapping(target = "team1", ignore = true)
+    @Mapping(target = "team2", ignore = true)
+    @BeanMapping(builder = @Builder(disableBuilder = true))
+    MatchEntity map(Match match, @Context Pair<TeamEntity, TeamEntity> teams);
+
+    @AfterMapping
+    default void afterMappingMatch(Match match, @MappingTarget MatchEntity matchEntity, @Context Pair<TeamEntity, TeamEntity> teams) {
+        matchEntity.setTeam1(teams.getFirst());
+        matchEntity.setTeam2(teams.getSecond());
+    }
 
     default String determineMatchName(MatchEntity entity) {
         return Optional.ofNullable(entity)

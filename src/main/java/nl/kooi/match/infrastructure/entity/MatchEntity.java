@@ -7,6 +7,7 @@ import nl.kooi.match.enums.MatchStatus;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -38,5 +39,6 @@ public class MatchEntity {
     private TeamEntity team2;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PlayerEventEntity> playerEvents;
+    @Builder.Default
+    private Set<PlayerEventEntity> playerEvents = new HashSet<>();
 }

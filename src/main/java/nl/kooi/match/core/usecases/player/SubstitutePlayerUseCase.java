@@ -14,6 +14,7 @@ import nl.kooi.match.exception.LineUpNotAllowedException;
 import nl.kooi.match.exception.MatchStatusException;
 import nl.kooi.match.exception.PlayerNotActiveInMatchException;
 import nl.kooi.match.infrastructure.port.MatchDao;
+import nl.kooi.match.infrastructure.port.TeamDao;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
@@ -29,6 +30,7 @@ import static nl.kooi.match.enums.ResponseType.PROCESSED_SUCCESSFULLY;
 public class SubstitutePlayerUseCase implements UseCaseHandler<SubstitutePlayerRequest, PlayerUseCaseResponse> {
 
     private final MatchDao matchDao;
+    private final TeamDao teamDao;
 
     @Override
     public PlayerUseCaseResponse handle(@Valid SubstitutePlayerRequest command) {
@@ -73,10 +75,19 @@ public class SubstitutePlayerUseCase implements UseCaseHandler<SubstitutePlayerR
 
     private PlayerUseCaseResponse addLineUpEvent(Match match, SubstitutePlayerRequest command) {
         try {
+            verifyIfPlayerPartOfTeams(match, command.substituteForPlayerId());
             match.addPLayerEvent(createLineUpEvent(command));
             return PlayerUseCaseResponse.successful();
         } catch (LineUpNotAllowedException e) {
             return PlayerUseCaseResponse.lineUpNotAllowed();
+        }
+    }
+
+    private void verifyIfPlayerPartOfTeams(Match match, Long playerId) {
+        var matches = match.matchName().split(" - ");
+
+        if (!teamDao.isPlayerPartOfTeams(playerId, matches[0], matches[1])) {
+            throw new LineUpNotAllowedException("Player is not part of the teams that are in match");
         }
     }
 

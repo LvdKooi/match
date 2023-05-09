@@ -3,6 +3,7 @@ package nl.kooi.match.infrastructure.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -20,5 +21,6 @@ public class TeamEntity {
     private String name;
 
     @OneToMany
-    private Set<PlayerEntity> players;
+    @Builder.Default
+    private Set<PlayerEntity> players = new HashSet<>();
 }

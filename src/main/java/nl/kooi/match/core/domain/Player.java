@@ -1,4 +1,4 @@
 package nl.kooi.match.core.domain;
 
-public class Player {
+public record Player (Long id, String name) {
 }
