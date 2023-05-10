@@ -5,18 +5,15 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import nl.kooi.match.api.AnnounceMatchResponseDto;
 import nl.kooi.match.api.dto.*;
-import nl.kooi.match.core.command.match.EndMatchUseCaseRequest;
-import nl.kooi.match.core.command.match.StartMatchRequest;
-import nl.kooi.match.core.domain.Match;
-import nl.kooi.match.core.usecases.match.EndMatchUseCase;
-import nl.kooi.match.core.usecases.match.StartMatchUseCase;
+import nl.kooi.match.api.dto.match.AnnounceMatchRequestDto;
+import nl.kooi.match.api.dto.match.MatchEventRequestDto;
 import nl.kooi.match.enums.CardType;
+import nl.kooi.match.enums.MatchEventType;
 import nl.kooi.match.enums.PlayerEventType;
 import nl.kooi.match.infrastructure.entity.PlayerEntity;
 import nl.kooi.match.infrastructure.entity.TeamEntity;
-import nl.kooi.match.infrastructure.mapper.Mapper;
-import nl.kooi.match.infrastructure.port.MatchDao;
 import nl.kooi.match.infrastructure.repository.MatchRepository;
 import nl.kooi.match.infrastructure.repository.PlayerRepository;
 import nl.kooi.match.infrastructure.repository.TeamRepository;
@@ -38,28 +35,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class MatchStepdefs extends CucumberBaseIT {
+    private static final String PLAYER_URL = "/matches/{matchId}/player-events";
+    private static final String MATCH_URL = "/matches/{matchId}/match-events";
+    private static final String MATCH_ANNOUNCEMENT_URL = "/matches/announce";
 
-    private Match match;
-
-    private TeamEntity team1;
-
-    private TeamEntity team2;
+    private Long matchId;
 
     private Map<String, PlayerEntity> playersByName = new HashMap<>();
+
+    private ResponseEntity<Void> response;
+
+    private ResponseEntity<ProblemDetail> error;
 
     @Autowired
     private TestRestTemplate restTemplate;
 
     @LocalServerPort
     private String portNumber;
-
-    private static final String PLAYER_URL = "/matches/{matchId}/player-events";
-    @Autowired
-    private MatchDao matchDao;
-
-    private ResponseEntity<Void> response;
-
-    private ResponseEntity<ProblemDetail> error;
 
     @Autowired
     private TeamRepository teamRepository;
@@ -71,16 +63,6 @@ public class MatchStepdefs extends CucumberBaseIT {
     private MatchRepository matchRepository;
 
 
-    @Autowired
-    private StartMatchUseCase startMatchUseCase;
-
-    @Autowired
-    private EndMatchUseCase endMatchUseCase;
-
-
-    @Autowired
-    private Mapper mapper;
-
     @After
     public void setUp() {
         playersByName.clear();
@@ -91,14 +73,15 @@ public class MatchStepdefs extends CucumberBaseIT {
 
     @Given("a match between team1 and team2")
     public void aMatchBetweenTeamAndTeam() {
-        team1 = teamRepository.save(TeamEntity.builder().name("team1").build());
-        team2 = teamRepository.save(TeamEntity.builder().name("team2").build());
-        match = matchDao.createNewMatch(Instant.now(), mapper.map(team1), mapper.map(team2));
+        var idTeam1 = teamRepository.save(TeamEntity.builder().name("team1").build()).getId();
+        var idTeam2 = teamRepository.save(TeamEntity.builder().name("team2").build()).getId();
+
+        makeMatchAnnouncementRequest(new AnnounceMatchRequestDto(Instant.now(), idTeam1, idTeam2));
     }
 
     @And("this match is currently taking place")
     public void thisMatchIsCurrentlyTakingPlace() {
-        startMatchUseCase.handle(new StartMatchRequest(match.id()));
+        makeMatchUseCaseRequest(matchId, new MatchEventRequestDto(MatchEventType.STARTING));
     }
 
     @And("team{int} has a player {word}")
@@ -130,7 +113,7 @@ public class MatchStepdefs extends CucumberBaseIT {
         request.setEventType(cardType.equalsIgnoreCase("YELLOW") ? PlayerEventType.YELLOW_CARD : PlayerEventType.RED_CARD);
         request.setCard(CardType.valueOf(cardType.toUpperCase()));
 
-        makePlayerUseCaseRequest(match.id(), request);
+        makePlayerUseCaseRequest(matchId, request);
 
     }
 
@@ -142,7 +125,7 @@ public class MatchStepdefs extends CucumberBaseIT {
         request.setEventType(cardType.equalsIgnoreCase("YELLOW") ? PlayerEventType.YELLOW_CARD : PlayerEventType.RED_CARD);
         request.setCard(CardType.valueOf(cardType.toUpperCase()));
 
-        makePlayerUseCaseRequest(match.id(), request);
+        makePlayerUseCaseRequest(matchId, request);
     }
 
     @Then("an error is shown stating: {string}")
@@ -155,7 +138,7 @@ public class MatchStepdefs extends CucumberBaseIT {
 
     @And("this match has already ended")
     public void thisMatchHasAlreadyEnded() {
-        endMatchUseCase.handle(new EndMatchUseCaseRequest(match.id()));
+        makeMatchUseCaseRequest(matchId, new MatchEventRequestDto(MatchEventType.ENDING));
     }
 
 
@@ -168,7 +151,7 @@ public class MatchStepdefs extends CucumberBaseIT {
         request.setInjuryType(INJURED);
         request.setEventType(PlayerEventType.INJURED);
 
-        makePlayerUseCaseRequest(match.id(), request);
+        makePlayerUseCaseRequest(matchId, request);
     }
 
     @When("a player that is not part of the match becomes injured at minute {int}")
@@ -179,7 +162,7 @@ public class MatchStepdefs extends CucumberBaseIT {
         request.setInjuryType(INJURED);
         request.setEventType(PlayerEventType.INJURED);
 
-        makePlayerUseCaseRequest(match.id(), request);
+        makePlayerUseCaseRequest(matchId, request);
     }
 
     @And("player {word} is currently lined up")
@@ -189,7 +172,7 @@ public class MatchStepdefs extends CucumberBaseIT {
         request.setMinute(0);
         request.setEventType(PlayerEventType.LINED_UP);
 
-        makePlayerUseCaseRequest(match.id(), request);
+        makePlayerUseCaseRequest(matchId, request);
     }
 
     @When("player {word} is substituted by player {word} at minute {int}")
@@ -200,7 +183,7 @@ public class MatchStepdefs extends CucumberBaseIT {
         request.setMinute(minute);
         request.setEventType(PlayerEventType.SUBSTITUTED);
 
-        makePlayerUseCaseRequest(match.id(), request);
+        makePlayerUseCaseRequest(matchId, request);
     }
 
     @When("player {word} is substituted by a player that is not part of the match at minute {int}")
@@ -211,7 +194,7 @@ public class MatchStepdefs extends CucumberBaseIT {
         request.setMinute(minute);
         request.setEventType(PlayerEventType.SUBSTITUTED);
 
-        makePlayerUseCaseRequest(match.id(), request);
+        makePlayerUseCaseRequest(matchId, request);
     }
 
     private void makePlayerUseCaseRequest(Long matchId, PlayerEventRequestDto dto) {
@@ -222,5 +205,17 @@ public class MatchStepdefs extends CucumberBaseIT {
             response = null;
             error = restTemplate.postForEntity(url, dto, ProblemDetail.class);
         }
+    }
+
+    private void makeMatchUseCaseRequest(Long matchId, MatchEventRequestDto dto) {
+        var url = "http://localhost:".concat(portNumber).concat(MATCH_URL).replace("{matchId}", matchId.toString());
+        restTemplate.postForEntity(url, dto, Void.class);
+    }
+
+    private void makeMatchAnnouncementRequest(AnnounceMatchRequestDto dto) {
+        var url = "http://localhost:".concat(portNumber).concat(MATCH_ANNOUNCEMENT_URL);
+        var response = restTemplate.postForEntity(url, dto, AnnounceMatchResponseDto.class);
+
+        matchId = response.getBody().matchId();
     }
 }

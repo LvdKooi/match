@@ -1,5 +1,6 @@
-package nl.kooi.match.api;
+package nl.kooi.match.api.handler;
 
+import nl.kooi.match.core.domain.exception.MatchEventException;
 import nl.kooi.match.exception.NotFoundException;
 import nl.kooi.match.exception.PlayerEventException;
 import org.springframework.http.HttpStatus;
@@ -11,8 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionHandler {
 
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    @org.springframework.web.bind.annotation.ExceptionHandler(PlayerEventException.class)
-    public ProblemDetail handlePlayerEvenException(PlayerEventException exc) {
+    @org.springframework.web.bind.annotation.ExceptionHandler({PlayerEventException.class, MatchEventException.class})
+    public ProblemDetail handlePlayerEvenException(RuntimeException exc) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exc.getMessage());
     }
 

@@ -1,4 +1,4 @@
-package nl.kooi.match.api;
+package nl.kooi.match.api.handler;
 
 import lombok.RequiredArgsConstructor;
 import nl.kooi.match.core.command.player.*;
@@ -19,7 +19,7 @@ import static nl.kooi.match.enums.ResponseType.PROCESSED_SUCCESSFULLY;
 
 @Component
 @RequiredArgsConstructor
-public class UseCaseHandler {
+public class PlayerUseCaseHandler {
     private final DisciplinePlayerUseCase disciplinePlayerUseCase;
     private final InjuredPlayerUseCase injuredPlayerUseCase;
     private final LineUpPlayerUseCase lineUpPlayerUseCase;
@@ -46,10 +46,10 @@ public class UseCaseHandler {
         Optional.ofNullable(callable.call())
                 .map(PlayerUseCaseResponse::getResponseType)
                 .filter(responseType -> responseType != PROCESSED_SUCCESSFULLY)
-                .ifPresent(UseCaseHandler::handleResponseType);
+                .ifPresent(PlayerUseCaseHandler::handleNotSuccessfulResponseType);
     }
 
-    private static void handleResponseType(ResponseType responseType) {
+    private static void handleNotSuccessfulResponseType(ResponseType responseType) {
         if (responseType == MATCH_NOT_FOUND) {
             throw new NotFoundException(MATCH_NOT_FOUND.name());
         } else {
