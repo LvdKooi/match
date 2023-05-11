@@ -1,4 +1,4 @@
-package nl.kooi.match.api.dto;
+package nl.kooi.match.api.dto.player;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

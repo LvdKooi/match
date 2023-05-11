@@ -3,6 +3,7 @@ package nl.kooi.match.api;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nl.kooi.match.api.dto.match.AnnounceMatchRequestDto;
+import nl.kooi.match.api.dto.match.AnnounceMatchResponseDto;
 import nl.kooi.match.api.dto.match.MatchEventRequestDto;
 import nl.kooi.match.api.handler.MatchUseCaseHandler;
 import nl.kooi.match.api.mapper.DtoMapper;

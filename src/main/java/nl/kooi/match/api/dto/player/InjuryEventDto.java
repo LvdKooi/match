@@ -1,4 +1,4 @@
-package nl.kooi.match.api.dto;
+package nl.kooi.match.api.dto.player;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

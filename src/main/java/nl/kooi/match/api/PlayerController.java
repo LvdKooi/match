@@ -2,7 +2,7 @@ package nl.kooi.match.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import nl.kooi.match.api.dto.*;
+import nl.kooi.match.api.dto.player.*;
 import nl.kooi.match.api.handler.PlayerUseCaseHandler;
 import nl.kooi.match.api.mapper.DtoMapper;
 import org.springframework.http.HttpStatus;

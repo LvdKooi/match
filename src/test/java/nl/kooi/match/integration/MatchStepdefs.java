@@ -5,10 +5,10 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import nl.kooi.match.api.AnnounceMatchResponseDto;
-import nl.kooi.match.api.dto.*;
 import nl.kooi.match.api.dto.match.AnnounceMatchRequestDto;
+import nl.kooi.match.api.dto.match.AnnounceMatchResponseDto;
 import nl.kooi.match.api.dto.match.MatchEventRequestDto;
+import nl.kooi.match.api.dto.player.*;
 import nl.kooi.match.enums.CardType;
 import nl.kooi.match.enums.MatchEventType;
 import nl.kooi.match.enums.PlayerEventType;
@@ -20,7 +20,6 @@ import nl.kooi.match.infrastructure.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +40,7 @@ public class MatchStepdefs extends CucumberBaseIT {
 
     private Long matchId;
 
-    private Map<String, PlayerEntity> playersByName = new HashMap<>();
+    private final Map<String, PlayerEntity> playersByName = new HashMap<>();
 
     private ResponseEntity<Void> response;
 
@@ -64,7 +63,7 @@ public class MatchStepdefs extends CucumberBaseIT {
 
 
     @After
-    public void setUp() {
+    public void cleanUp() {
         playersByName.clear();
         matchRepository.deleteAll();
         teamRepository.deleteAll();
@@ -87,7 +86,7 @@ public class MatchStepdefs extends CucumberBaseIT {
     @And("team{int} has a player {word}")
     @Transactional
     public void teamHasAPlayerNamed(int teamNumber, String playerName) {
-        var team = teamRepository.findByName(teamNumber == 1 ? "team1" : "team2").get();
+        var team = teamRepository.findByName(teamNumber == 1 ? "team1" : "team2").orElseThrow();
 
         var player = playerRepository.save(PlayerEntity.builder().name(playerName).build());
 
@@ -100,8 +99,9 @@ public class MatchStepdefs extends CucumberBaseIT {
     @Then("the request is handled successfully")
     public void theRequestIsHandledSuccessfully() {
         assertThat(Optional.ofNullable(response)
-                .map(r -> r.getStatusCode().equals(HttpStatusCode.valueOf(201)))
-                .orElse(false)).isTrue();
+                .map(r -> r.getStatusCode().is2xxSuccessful())
+                .orElse(false))
+                .isTrue();
     }
 
     @When("player {word} gets a {word} card at minute {int}")
@@ -216,6 +216,8 @@ public class MatchStepdefs extends CucumberBaseIT {
         var url = "http://localhost:".concat(portNumber).concat(MATCH_ANNOUNCEMENT_URL);
         var response = restTemplate.postForEntity(url, dto, AnnounceMatchResponseDto.class);
 
-        matchId = response.getBody().matchId();
+        matchId = Optional.ofNullable(response).map(ResponseEntity::getBody)
+                .map(AnnounceMatchResponseDto::matchId)
+                .orElseThrow();
     }
 }
