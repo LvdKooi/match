@@ -5,6 +5,7 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import nl.kooi.match.api.ViewMatchResponseDto;
 import nl.kooi.match.api.dto.match.AnnounceMatchRequestDto;
 import nl.kooi.match.api.dto.match.AnnounceMatchResponseDto;
 import nl.kooi.match.api.dto.match.MatchEventRequestDto;
@@ -35,7 +36,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MatchStepdefs extends CucumberBaseIT {
     private static final String PLAYER_URL = "/matches/{matchId}/player-events";
-    private static final String MATCH_URL = "/matches/{matchId}/match-events";
+
+    private static final String MATCH_URL = "/matches/{matchId}";
+    private static final String MATCH_EVENTS_URL = MATCH_URL + "/match-events";
     private static final String MATCH_ANNOUNCEMENT_URL = "/matches/announce";
 
     private Long matchId;
@@ -43,6 +46,8 @@ public class MatchStepdefs extends CucumberBaseIT {
     private final Map<String, PlayerEntity> playersByName = new HashMap<>();
 
     private ResponseEntity<Void> response;
+
+    private ViewMatchResponseDto matchResponse;
 
     private ResponseEntity<ProblemDetail> error;
 
@@ -106,7 +111,7 @@ public class MatchStepdefs extends CucumberBaseIT {
 
     @When("player {word} gets a {word} card at minute {int}")
     @Given("player {word} got a {word} card at minute {int}")
-    public void playerRonaldoGetsAYellowCardAtMinute(String playerName, String cardType, int minute) {
+    public void playerGetsAYellowCardAtMinute(String playerName, String cardType, int minute) {
         var request = new DisciplineEventDto();
         request.setMinute(minute);
         request.setPlayerId(playersByName.get(playerName).getId());
@@ -118,7 +123,7 @@ public class MatchStepdefs extends CucumberBaseIT {
     }
 
     @When("a player that is not part of the match gets a {word} card at minute {int}")
-    public void playerRonaldoGetsAYellowCardAtMinute(String cardType, int minute) {
+    public void playerGetsAYellowCardAtMinute(String cardType, int minute) {
         var request = new DisciplineEventDto();
         request.setMinute(minute);
         request.setPlayerId(10000L);
@@ -166,7 +171,7 @@ public class MatchStepdefs extends CucumberBaseIT {
     }
 
     @And("player {word} is currently lined up")
-    public void playerRonaldoIsCurrentlyLinedUp(String playerName) {
+    public void playerIsCurrentlyLinedUp(String playerName) {
         var request = new PlayerLineUpEventDto();
         request.setPlayerId(playersByName.get(playerName).getId());
         request.setMinute(0);
@@ -176,7 +181,7 @@ public class MatchStepdefs extends CucumberBaseIT {
     }
 
     @When("player {word} is substituted by player {word} at minute {int}")
-    public void playerRonaldoIsSubstitutedByPlayerMessi(String player1, String player2, int minute) {
+    public void playerIsSubstitutedByPlayerMessi(String player1, String player2, int minute) {
         var request = new SubstitutionEventDto();
         request.setPlayerId(playersByName.get(player1).getId());
         request.setSubstituteForPlayerId(playersByName.get(player2).getId());
@@ -187,7 +192,7 @@ public class MatchStepdefs extends CucumberBaseIT {
     }
 
     @When("player {word} is substituted by a player that is not part of the match at minute {int}")
-    public void playerRonaldoIsSubstitutedByAPlayerThatIsNotPartOfTheMatchAtMinute(String playerName, int minute) {
+    public void playerIsSubstitutedByAPlayerThatIsNotPartOfTheMatchAtMinute(String playerName, int minute) {
         var request = new SubstitutionEventDto();
         request.setPlayerId(playersByName.get(playerName).getId());
         request.setSubstituteForPlayerId(10000L);
@@ -208,7 +213,7 @@ public class MatchStepdefs extends CucumberBaseIT {
     }
 
     private void makeMatchUseCaseRequest(Long matchId, MatchEventRequestDto dto) {
-        var url = "http://localhost:".concat(portNumber).concat(MATCH_URL).replace("{matchId}", matchId.toString());
+        var url = "http://localhost:".concat(portNumber).concat(MATCH_EVENTS_URL).replace("{matchId}", matchId.toString());
         restTemplate.postForEntity(url, dto, Void.class);
     }
 
@@ -219,5 +224,23 @@ public class MatchStepdefs extends CucumberBaseIT {
         matchId = Optional.ofNullable(response).map(ResponseEntity::getBody)
                 .map(AnnounceMatchResponseDto::matchId)
                 .orElseThrow();
+    }
+
+    private void makeViewMatchRequest(Long matchId) {
+        var url = "http://localhost:".concat(portNumber).concat(MATCH_URL).replace("{matchId}", matchId.toString());
+        matchResponse = Optional.ofNullable(restTemplate
+                        .getForEntity(url, ViewMatchResponseDto.class))
+                .map(ResponseEntity::getBody)
+                .orElseThrow();
+    }
+
+    @And("the match contains {int} events for player {word}")
+    @And("the match contains {int} event for player {word}")
+    public void theMatchContainsEventsForPlayer(int numberOfEvents, String playerName) {
+        makeViewMatchRequest(matchId);
+
+        assertThat(matchResponse.playerEvents().stream()
+                .filter(event -> event.playerId().equals(playersByName.get(playerName).getId()))
+                .count()).isEqualTo(numberOfEvents);
     }
 }

@@ -9,6 +9,7 @@ Feature: the player substitute use case
   Scenario Outline: A player that is currently in the match gets a valid card
     When player Ronaldo gets a <card_type> card at minute 0
     Then the request is handled successfully
+    And the match contains 2 events for player Ronaldo
     Examples:
       | card_type |
       | YELLOW    |
@@ -22,16 +23,19 @@ Feature: the player substitute use case
     Given player Ronaldo got a YELLOW card at minute 0
     When player Ronaldo gets a YELLOW card at minute 1
     Then an error is shown stating: "Event is not valid: ALREADY_HAD_A_YELLOW_CARD"
+    And the match contains 2 events for player Ronaldo
 
   Scenario: A player that already had a yellow card gets a red card
     Given player Ronaldo got a YELLOW card at minute 0
     When player Ronaldo gets a RED card at minute 1
     Then the request is handled successfully
+    And the match contains 3 events for player Ronaldo
 
   Scenario: A player that already had taking red card gets another red card
     Given player Ronaldo got a RED card at minute 0
     When player Ronaldo gets a RED card at minute 1
     Then an error is shown stating: "Event is not valid: PLAYER_NOT_ACTIVE_IN_MATCH"
+    And the match contains 2 events for player Ronaldo
 
   Scenario: A player gets disciplined while match has not started yet
     When a player that is not part of the match gets a RED card at minute 0

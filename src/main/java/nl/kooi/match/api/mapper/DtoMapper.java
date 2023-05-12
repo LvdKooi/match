@@ -1,17 +1,17 @@
 package nl.kooi.match.api.mapper;
 
-import nl.kooi.match.api.dto.match.AnnounceMatchResponseDto;
-import nl.kooi.match.api.dto.player.DisciplineEventDto;
-import nl.kooi.match.api.dto.player.InjuryEventDto;
-import nl.kooi.match.api.dto.player.PlayerLineUpEventDto;
-import nl.kooi.match.api.dto.player.SubstitutionEventDto;
+import nl.kooi.match.api.ViewMatchResponseDto;
 import nl.kooi.match.api.dto.match.AnnounceMatchRequestDto;
+import nl.kooi.match.api.dto.match.AnnounceMatchResponseDto;
+import nl.kooi.match.api.dto.player.*;
 import nl.kooi.match.core.command.match.AnnounceMatchRequest;
 import nl.kooi.match.core.command.match.MatchUseCaseResponse;
+import nl.kooi.match.core.command.match.ViewMatchUseCaseResponse;
 import nl.kooi.match.core.command.player.DisciplinePlayerRequest;
 import nl.kooi.match.core.command.player.InjuredPlayerRequest;
 import nl.kooi.match.core.command.player.LineUpPlayerRequest;
 import nl.kooi.match.core.command.player.SubstitutePlayerRequest;
+import nl.kooi.match.core.domain.PlayerEvent;
 import org.mapstruct.ReportingPolicy;
 
 @org.mapstruct.Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -28,4 +28,8 @@ public interface DtoMapper {
     AnnounceMatchRequest map(AnnounceMatchRequestDto dto);
 
     AnnounceMatchResponseDto map(MatchUseCaseResponse response);
+
+    ViewMatchResponseDto map(ViewMatchUseCaseResponse response);
+
+    PlayerEventDto map(PlayerEvent event);
 }

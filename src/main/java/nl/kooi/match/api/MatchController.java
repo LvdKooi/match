@@ -7,10 +7,7 @@ import nl.kooi.match.api.dto.match.AnnounceMatchResponseDto;
 import nl.kooi.match.api.dto.match.MatchEventRequestDto;
 import nl.kooi.match.api.handler.MatchUseCaseHandler;
 import nl.kooi.match.api.mapper.DtoMapper;
-import nl.kooi.match.core.command.match.CancelMatchRequest;
-import nl.kooi.match.core.command.match.EndMatchUseCaseRequest;
-import nl.kooi.match.core.command.match.PostponeMatchRequest;
-import nl.kooi.match.core.command.match.StartMatchRequest;
+import nl.kooi.match.core.command.match.*;
 import nl.kooi.match.core.domain.exception.MatchEventException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -47,5 +44,10 @@ public class MatchController {
             case POSTPONING -> handler.handle(new PostponeMatchRequest(matchId));
             case STARTING -> handler.handle(new StartMatchRequest(matchId));
         }
+    }
+
+    @GetMapping("/{matchId}")
+    public ViewMatchResponseDto viewMatch(@PathVariable Long matchId) {
+        return mapper.map(handler.handle(new ViewMatchUseCaseRequest(matchId)));
     }
 }
