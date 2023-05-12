@@ -22,7 +22,7 @@ public class MatchEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @CreationTimestamp
+    @CreationTimestamp()
     private Instant creationTimestamp;
 
     @NotNull

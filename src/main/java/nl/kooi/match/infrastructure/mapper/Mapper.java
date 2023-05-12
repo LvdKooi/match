@@ -11,6 +11,7 @@ import nl.kooi.match.infrastructure.entity.TeamEntity;
 import org.mapstruct.*;
 import org.springframework.data.util.Pair;
 
+import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -32,12 +33,13 @@ public interface Mapper {
     @Mapping(target = "team1", ignore = true)
     @Mapping(target = "team2", ignore = true)
     @BeanMapping(builder = @Builder(disableBuilder = true))
-    MatchEntity map(Match match, @Context Pair<TeamEntity, TeamEntity> teams);
+    MatchEntity map(Match match, @Context Pair<TeamEntity, TeamEntity> teams, @Context Instant creationTimestamp);
 
     @AfterMapping
-    default void afterMappingMatch(Match match, @MappingTarget MatchEntity matchEntity, @Context Pair<TeamEntity, TeamEntity> teams) {
+    default void afterMappingMatch(Match match, @MappingTarget MatchEntity matchEntity, @Context Pair<TeamEntity, TeamEntity> teams, @Context Instant creationTimestamp) {
         matchEntity.setTeam1(teams.getFirst());
         matchEntity.setTeam2(teams.getSecond());
+        matchEntity.setCreationTimestamp(creationTimestamp);
     }
 
     default String determineMatchName(MatchEntity entity) {

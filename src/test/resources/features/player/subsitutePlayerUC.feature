@@ -19,7 +19,6 @@ Feature: the player substitute use case
     Then an error is shown stating: "Event is not valid: LINE_UP_NOT_ALLOWED"
     And the match contains 1 events for player Ronaldo
 
-
   Scenario: A player that was already substituted gets substituted again
     Given team1 has a player Messi
     And this match is currently taking place

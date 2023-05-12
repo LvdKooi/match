@@ -45,7 +45,7 @@ public class MatchPersistenceService implements MatchDao {
     public Match update(Match match) {
         return matchRepository
                 .findById(match.id())
-                .map(m -> mapper.map(match, Pair.of(m.getTeam1(), m.getTeam2())))
+                .map(m -> mapper.map(match, Pair.of(m.getTeam1(), m.getTeam2()), m.getCreationTimestamp()))
                 .map(matchRepository::save)
                 .map(success -> match)
                 .orElseThrow(() -> new NotFoundException("Match not found"));

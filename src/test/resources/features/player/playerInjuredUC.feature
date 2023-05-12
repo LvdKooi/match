@@ -11,7 +11,6 @@ Feature: the player is injured use case
     Then the request is handled successfully
     And the match contains 2 events for player Ronaldo
 
-
   Scenario: A player that is not playing in the match gets injured
     Given this match is currently taking place
     When a player that is not part of the match becomes injured at minute 0
