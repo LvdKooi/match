@@ -23,6 +23,13 @@ public class MatchUseCaseHandler {
     private final EndMatchUseCase endMatchUseCase;
     private final PostponeMatchUseCase postponeMatchUseCase;
     private final StartMatchUseCase startMatchUseCase;
+    private final ViewMatchUseCase viewMatchUseCase;
+
+    public ViewMatchUseCaseResponse handle(ViewMatchUseCaseRequest request) {
+        var response = viewMatchUseCase.handle(request);
+        handleResponse(() -> response);
+        return response;
+    }
 
     public MatchUseCaseResponse handle(AnnounceMatchRequest request) {
         var response = announceMatchUseCase.handle(request);
@@ -49,7 +56,7 @@ public class MatchUseCaseHandler {
     private void handleResponse(Supplier<MatchUseCaseResponse> responseSupplier) {
         Optional.ofNullable(responseSupplier)
                 .map(Supplier::get)
-                .map(MatchUseCaseResponse::response)
+                .map(MatchUseCaseResponse::getResponse)
                 .filter(response -> response != PROCESSED_SUCCESSFULLY)
                 .ifPresent(MatchUseCaseHandler::handleNotSuccessfulResponseType);
     }

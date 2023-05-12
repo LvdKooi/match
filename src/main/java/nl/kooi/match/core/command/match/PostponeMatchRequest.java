@@ -1,4 +1,6 @@
 package nl.kooi.match.core.command.match;
 
-public record PostponeMatchRequest(Long matchId) {
+import jakarta.validation.constraints.NotNull;
+
+public record PostponeMatchRequest(@NotNull Long matchId) {
 }

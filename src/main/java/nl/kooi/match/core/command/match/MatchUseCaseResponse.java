@@ -1,9 +1,17 @@
 package nl.kooi.match.core.command.match;
 
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import nl.kooi.match.enums.MatchStatus;
 import nl.kooi.match.enums.ResponseType;
 
-public record MatchUseCaseResponse(ResponseType response, MatchStatus status, Long matchId, String matchName) {
+@RequiredArgsConstructor
+@Data
+public class MatchUseCaseResponse {
+    private final ResponseType response;
+    private final MatchStatus status;
+    private final Long matchId;
+    private final String matchName;
 
     public static MatchUseCaseResponse notExistingTeam() {
         return new MatchUseCaseResponse(ResponseType.MATCH_REQUESTED_FOR_NON_EXISTING_TEAM, null, null, null);

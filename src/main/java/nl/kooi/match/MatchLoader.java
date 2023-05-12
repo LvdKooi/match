@@ -38,6 +38,6 @@ public class MatchLoader implements CommandLineRunner {
 
 
         var response = announceMatchUseCase.handle(new AnnounceMatchRequest(Instant.now().plus(1, ChronoUnit.MINUTES), team1.getId(), team2.getId()));
-        startMatchUseCase.handle(new StartMatchRequest(response.matchId()));
+        startMatchUseCase.handle(new StartMatchRequest(response.getMatchId()));
     }
 }
