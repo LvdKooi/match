@@ -8,7 +8,7 @@ import nl.kooi.match.api.dto.match.MatchEventRequestDto;
 import nl.kooi.match.api.handler.MatchUseCaseHandler;
 import nl.kooi.match.api.mapper.DtoMapper;
 import nl.kooi.match.core.command.match.*;
-import nl.kooi.match.core.domain.exception.MatchEventException;
+import nl.kooi.match.exception.MatchEventException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

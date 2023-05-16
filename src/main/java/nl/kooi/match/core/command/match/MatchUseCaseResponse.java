@@ -28,6 +28,10 @@ public class MatchUseCaseResponse {
     public static MatchUseCaseResponse statusUpdateNotAllowed(MatchStatus status, Long matchId, String matchName) {
         return new MatchUseCaseResponse(ResponseType.NEW_MATCH_STATUS_NOT_ALLOWED, status, matchId, matchName);
     }
+
+    public static MatchUseCaseResponse fail() {
+        return new MatchUseCaseResponse(ResponseType.PROCESSED_UNSUCCESSFULLY, null, null, null);
+    }
 }
 
 

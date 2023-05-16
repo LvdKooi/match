@@ -53,19 +53,6 @@ public class MatchPersistenceService implements MatchDao {
 
     @Override
     @Transactional
-    public Match moveToStatus(Long matchId, MatchStatus matchStatus) {
-        return matchRepository.findById(matchId)
-                .map(match -> {
-                    match.setMatchStatus(matchStatus);
-                    return match;
-                })
-                .map(matchRepository::save)
-                .map(mapper::map)
-                .orElseThrow(() -> new NotFoundException("Update for a match that is unknown"));
-    }
-
-    @Override
-    @Transactional
     public Match createNewMatch(Instant startTimestamp, Team team1, Team team2) {
         return Optional.of(MatchEntity.builder()
                         .matchStatus(MatchStatus.ANNOUNCED)

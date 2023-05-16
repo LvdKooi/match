@@ -9,10 +9,7 @@ import nl.kooi.match.exception.PlayerException;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.Instant;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -37,12 +34,19 @@ public record Match(Long id,
         return new Match(null, status, startTimestamp, null, matchName, null);
     }
 
+    public Match advanceToStatus(MatchStatus newStatus) {
+        return withMatch()
+                .filter(match -> match.matchStatus().canTransitionTo(newStatus))
+                .map(match -> new Match(match.id(), newStatus, match.startTimestamp, match.endTimestamp, match.matchName, match.playerEvents))
+                .orElseThrow(() -> MatchStatusException.newStatusNotAllowed(matchStatus, newStatus));
+    }
+
     @Override
     public Set<PlayerEvent> playerEvents() {
         return Set.copyOf(playerEvents);
     }
 
-    public void addPLayerEvent(@Valid @NotNull PlayerEvent event) {
+    public Match addPlayerEvent(@Valid @NotNull PlayerEvent event) {
         switch (event.getEventType()) {
             case INJURED, SUBSTITUTED, RED_CARD -> {
                 verifyIfMatchIsStarted();
@@ -56,30 +60,51 @@ public record Match(Long id,
             }
         }
 
-        removeFutureEvents(event.getPlayerId(), event.getMinute());
-        this.playerEvents.add(event);
+        return new Match(this.id,
+                this.matchStatus,
+                this.startTimestamp,
+                this.endTimestamp,
+                this.matchName,
+                updatedPlayerEvents(event));
     }
 
-    private void removeFutureEvents(Long playerId, int afterMinute) {
-        this.playerEvents.removeIf(event -> event.getPlayerId().equals(playerId) && event.getMinute() > afterMinute);
+    private Set<PlayerEvent> updatedPlayerEvents(PlayerEvent event) {
+        return Optional.of(playerEvents())
+                .map(HashSet::new)
+                .map(events -> removeFutureEvents(events, event.getPlayerId(), event.getMinute()))
+                .map(events -> {
+                    events.add(event);
+                    return events;
+                })
+                .orElseGet(Collections::emptySet);
+    }
+
+    private Set<PlayerEvent> removeFutureEvents(Set<PlayerEvent> events, Long playerId, int afterMinute) {
+        var updatedEvents = new HashSet<>(events);
+        updatedEvents.removeIf(event -> event.getPlayerId().equals(playerId) && event.getMinute() > afterMinute);
+        return updatedEvents;
     }
 
     private void verifyIfMatchIsStarted() {
-        Optional.of(this)
+        withMatch()
                 .map(Match::matchStatus)
                 .filter(status -> status == MatchStatus.STARTED)
                 .orElseThrow(MatchStatusException::matchIsNotActive);
     }
 
+    private Optional<Match> withMatch() {
+        return Optional.of(this);
+    }
+
     private void filterMatchOnStatusOrElseThrow(Stream<MatchStatus> matchStatusses, Supplier<MatchStatusException> exceptionSupplier) {
-        Optional.of(this)
+        withMatch()
                 .map(Match::matchStatus)
                 .filter(status -> matchStatusses.anyMatch(st -> st == status))
                 .orElseThrow(exceptionSupplier);
     }
 
     private void verifyYellowCardEvent(PlayerEvent event) {
-        Optional.of(this)
+        withMatch()
                 .filter(hasPlayerAlreadyHadAYellowCard(event).negate())
                 .orElseThrow(PlayerException::alreadyHadYellowCard);
     }
@@ -87,14 +112,14 @@ public record Match(Long id,
     private void verifyLineUpEvent(PlayerEvent event) {
         filterMatchOnStatusOrElseThrow(Stream.of(MatchStatus.STARTED, MatchStatus.ANNOUNCED), MatchStatusException::matchDoesntAcceptLineUps);
 
-        Optional.of(this)
+        withMatch()
                 .filter((isPlayerCurrentlyPartOfMatch(event).and(hasPlayerBeenInjured(event)))
                         .or(hasPlayerNotPlayedInMatchYet(event)))
                 .orElseThrow(PlayerException::lineUpNotAllowed);
     }
 
     private void verifyIsCurrentlyPartOfMatch(PlayerEvent event) {
-        Optional.of(this)
+        withMatch()
                 .filter(isPlayerCurrentlyPartOfMatch(event))
                 .orElseThrow(PlayerException::notActiveInMatch);
     }

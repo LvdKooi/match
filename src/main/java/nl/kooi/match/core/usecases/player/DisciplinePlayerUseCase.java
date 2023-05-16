@@ -7,15 +7,17 @@ import nl.kooi.match.core.command.player.DisciplinePlayerRequest;
 import nl.kooi.match.core.command.player.PlayerUseCaseResponse;
 import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.PlayerEvent;
+import nl.kooi.match.core.usecases.UseCaseHandler;
+import nl.kooi.match.enums.CardType;
+import nl.kooi.match.enums.PlayerEventType;
 import nl.kooi.match.exception.MatchStatusException;
 import nl.kooi.match.exception.PlayerNotActiveInMatchException;
 import nl.kooi.match.exception.YellowCardException;
-import nl.kooi.match.enums.CardType;
-import nl.kooi.match.enums.PlayerEventType;
 import nl.kooi.match.infrastructure.port.MatchDao;
-import nl.kooi.match.core.usecases.UseCaseHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -34,9 +36,12 @@ public class DisciplinePlayerUseCase implements UseCaseHandler<DisciplinePlayerR
 
     private PlayerUseCaseResponse handlePlayerEvent(Match match, DisciplinePlayerRequest command) {
         try {
-            match.addPLayerEvent(createPlayerEvent(command));
-            matchDao.update(match);
-            return PlayerUseCaseResponse.successful();
+            return Optional.ofNullable(command)
+                    .map(DisciplinePlayerUseCase::createPlayerEvent)
+                    .map(match::addPlayerEvent)
+                    .map(matchDao::update)
+                    .map(success -> PlayerUseCaseResponse.successful())
+                    .orElseGet(PlayerUseCaseResponse::fail);
         } catch (YellowCardException e) {
             return PlayerUseCaseResponse.alreadyHadAYellowCard();
         } catch (PlayerNotActiveInMatchException e) {

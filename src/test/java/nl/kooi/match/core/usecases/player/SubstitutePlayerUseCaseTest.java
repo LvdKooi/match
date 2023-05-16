@@ -51,6 +51,7 @@ class SubstitutePlayerUseCaseTest {
 
         when(matchDao.findById(1L)).thenReturn(Optional.of(match));
         when(matchDao.isPlayerPartOfMatch(2L, 1L)).thenReturn(true);
+        when(matchDao.update(any(Match.class))).thenReturn(match);
 
         var response = useCase.handle(new SubstitutePlayerRequest(1L, 1L, 2L, 10));
 
@@ -87,13 +88,13 @@ class SubstitutePlayerUseCaseTest {
     void substitutionWithTwoFailure_returnsFail() {
         var match = getDefaultMatchForPlayerWithId(3L);
 
-        match.addPLayerEvent(PlayerEvent.builder().playerId(2L).eventType(PlayerEventType.LINED_UP).minute(0).build());
+        match.addPlayerEvent(PlayerEvent.builder().playerId(2L).eventType(PlayerEventType.LINED_UP).minute(0).build());
 
         when(matchDao.findById(1L)).thenReturn(Optional.of(match));
 
         var response = useCase.handle(new SubstitutePlayerRequest(1L, 1L, 2L, 10));
 
-        assertThat(response.getResponseType()).isEqualTo(PROCESSED_UNSUCCESSFULLY);
+        assertThat(response.getResponseType()).isEqualTo(PLAYER_NOT_ACTIVE_IN_MATCH);
 
         verify(matchDao, never()).update(any(Match.class));
     }
@@ -103,7 +104,7 @@ class SubstitutePlayerUseCaseTest {
     void substitutionWithOneFailure_returnsSpecificResponseTypeWithFailure2() {
         var match = getDefaultMatchForPlayerWithId(1L);
 
-        match.addPLayerEvent(PlayerEvent.builder().playerId(2L).eventType(PlayerEventType.LINED_UP).minute(0).build());
+        match.addPlayerEvent(PlayerEvent.builder().playerId(2L).eventType(PlayerEventType.LINED_UP).minute(0).build());
 
         when(matchDao.findById(1L)).thenReturn(Optional.of(match));
 

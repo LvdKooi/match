@@ -59,8 +59,10 @@ class LineUpPlayerUseCaseTest {
     @ParameterizedTest
     @EnumSource(value = MatchStatus.class, names = {"ANNOUNCED", "STARTED"})
     void whenMatchStatusAllowsForLineUp_AndPlayerIsNotLinedUpYet_thenSuccessfulIsReturned(MatchStatus status) {
+        var match = getDefaultMatchForPlayerWithIdAndMatchStatus(1L, status);
         when(matchDao.findById(1L)).thenReturn(Optional.of(getDefaultMatchForPlayerWithIdAndMatchStatus(1L, status)));
         when(matchDao.isPlayerPartOfMatch(2L, 1L)).thenReturn(true);
+        when(matchDao.update(any(Match.class))).thenReturn(match);
 
         assertThat(useCase.handle(new LineUpPlayerRequest(2L, 1L, 0)).getResponseType())
                 .isNotNull()
@@ -78,7 +80,7 @@ class LineUpPlayerUseCaseTest {
 
         when(matchDao.findById(1L)).thenReturn(Optional.of(match));
         when(matchDao.isPlayerPartOfMatch(2L, 1L)).thenReturn(true);
-
+        when(matchDao.update(any(Match.class))).thenReturn(match);
 
         assertThat(useCase.handle(new LineUpPlayerRequest(2L, 1L, 3)).getResponseType())
                 .isNotNull()

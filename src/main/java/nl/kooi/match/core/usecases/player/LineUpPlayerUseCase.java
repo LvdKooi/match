@@ -15,6 +15,8 @@ import nl.kooi.match.infrastructure.port.MatchDao;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.Optional;
+
 @Component
 @RequiredArgsConstructor
 @Transactional
@@ -32,20 +34,25 @@ public class LineUpPlayerUseCase implements UseCaseHandler<LineUpPlayerRequest, 
 
     private PlayerUseCaseResponse handlePlayerEvent(Match match, LineUpPlayerRequest command) {
         try {
-            verifyIfPlayerPartOfTeams(command);
+            return Optional.ofNullable(command)
+                    .map(this::verifyIfPlayerPartOfTeams)
+                    .map(LineUpPlayerUseCase::createPlayerEvent)
+                    .map(match::addPlayerEvent)
+                    .map(matchDao::update)
+                    .map(success -> PlayerUseCaseResponse.successful())
+                    .orElseGet(PlayerUseCaseResponse::fail);
 
-            match.addPLayerEvent(createPlayerEvent(command));
-            matchDao.update(match);
-            return PlayerUseCaseResponse.successful();
         } catch (LineUpNotAllowedException | MatchStatusException e) {
             return PlayerUseCaseResponse.lineUpNotAllowed();
         }
     }
 
-    private void verifyIfPlayerPartOfTeams(LineUpPlayerRequest command) {
+    private LineUpPlayerRequest verifyIfPlayerPartOfTeams(LineUpPlayerRequest command) {
         if (!matchDao.isPlayerPartOfMatch(command.playerId(), command.matchId())) {
             throw new LineUpNotAllowedException("Player is not part of the teams that are in match");
         }
+
+        return command;
     }
 
     private static PlayerEvent createPlayerEvent(LineUpPlayerRequest command) {

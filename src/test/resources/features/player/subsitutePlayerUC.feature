@@ -24,7 +24,7 @@ Feature: the player substitute use case
     And this match is currently taking place
     And player Ronaldo is substituted by player Messi at minute 0
     When player Ronaldo is substituted by player Messi at minute 2
-    Then an error is shown stating: "Event is not valid: PROCESSED_UNSUCCESSFULLY"
+    Then an error is shown stating: "Event is not valid: PLAYER_NOT_ACTIVE_IN_MATCH"
     And the match contains 2 events for player Ronaldo
     And the match contains 1 event for player Messi
 

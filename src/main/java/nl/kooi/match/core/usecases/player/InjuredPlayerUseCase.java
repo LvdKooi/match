@@ -7,13 +7,15 @@ import nl.kooi.match.core.command.player.InjuredPlayerRequest;
 import nl.kooi.match.core.command.player.PlayerUseCaseResponse;
 import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.PlayerEvent;
+import nl.kooi.match.core.usecases.UseCaseHandler;
+import nl.kooi.match.enums.PlayerEventType;
 import nl.kooi.match.exception.MatchStatusException;
 import nl.kooi.match.exception.PlayerNotActiveInMatchException;
-import nl.kooi.match.enums.PlayerEventType;
 import nl.kooi.match.infrastructure.port.MatchDao;
-import nl.kooi.match.core.usecases.UseCaseHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.Optional;
 
 import static nl.kooi.match.enums.InjuryType.INJURED;
 
@@ -35,9 +37,12 @@ public class InjuredPlayerUseCase implements UseCaseHandler<InjuredPlayerRequest
 
     private PlayerUseCaseResponse handlePlayerEvent(Match match, InjuredPlayerRequest command) {
         try {
-            match.addPLayerEvent(createPlayerEvent(command));
-            matchDao.update(match);
-            return PlayerUseCaseResponse.successful();
+            return Optional.ofNullable(command)
+                    .map(InjuredPlayerUseCase::createPlayerEvent)
+                    .map(match::addPlayerEvent)
+                    .map(matchDao::update)
+                    .map(success -> PlayerUseCaseResponse.successful())
+                    .orElseGet(PlayerUseCaseResponse::fail);
         } catch (PlayerNotActiveInMatchException e) {
             return PlayerUseCaseResponse.playerIsNotActiveInMatch();
         } catch (MatchStatusException e) {

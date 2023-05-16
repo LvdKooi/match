@@ -9,7 +9,6 @@ import nl.kooi.match.core.domain.Match;
 import nl.kooi.match.core.domain.PlayerEvent;
 import nl.kooi.match.core.usecases.UseCaseHandler;
 import nl.kooi.match.enums.PlayerEventType;
-import nl.kooi.match.enums.ResponseType;
 import nl.kooi.match.exception.LineUpNotAllowedException;
 import nl.kooi.match.exception.MatchStatusException;
 import nl.kooi.match.exception.PlayerNotActiveInMatchException;
@@ -17,10 +16,7 @@ import nl.kooi.match.infrastructure.port.MatchDao;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
-import static nl.kooi.match.enums.ResponseType.PROCESSED_SUCCESSFULLY;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -38,44 +34,17 @@ public class SubstitutePlayerUseCase implements UseCaseHandler<SubstitutePlayerR
     }
 
     private PlayerUseCaseResponse handlePlayerEvents(Match match, SubstitutePlayerRequest command) {
-        var substituteResponse = addSubstituteEvent(match, command);
-        var lineUpResponse = addLineUpEvent(match, command);
-
-        if (getResponseTypeStream(substituteResponse, lineUpResponse).allMatch(responseType -> responseType == PROCESSED_SUCCESSFULLY)) {
-            matchDao.update(match);
-            return PlayerUseCaseResponse.successful();
-        }
-
-        if (getResponseTypeStream(substituteResponse, lineUpResponse).noneMatch(responseType -> responseType == PROCESSED_SUCCESSFULLY)) {
-            return PlayerUseCaseResponse.fail();
-        }
-
-        return Stream.of(substituteResponse, lineUpResponse)
-                .filter(response -> response.getResponseType() != PROCESSED_SUCCESSFULLY)
-                .findFirst()
-                .orElseGet(PlayerUseCaseResponse::fail);
-    }
-
-    private static Stream<ResponseType> getResponseTypeStream(PlayerUseCaseResponse... responses) {
-        return Arrays.stream(responses).map(PlayerUseCaseResponse::getResponseType);
-    }
-
-    private PlayerUseCaseResponse addSubstituteEvent(Match match, SubstitutePlayerRequest command) {
         try {
-            match.addPLayerEvent(createSubstituteEvent(command));
-            return PlayerUseCaseResponse.successful();
+            return Optional.ofNullable(match)
+                    .map(m -> m.addPlayerEvent(createSubstituteEvent(command)))
+                    .map(m -> m.addPlayerEvent(createLineUpEvent(command)))
+                    .map(matchDao::update)
+                    .map(success -> PlayerUseCaseResponse.successful())
+                    .orElseGet(PlayerUseCaseResponse::fail);
         } catch (PlayerNotActiveInMatchException e) {
             return PlayerUseCaseResponse.playerIsNotActiveInMatch();
         } catch (MatchStatusException e) {
             return PlayerUseCaseResponse.matchIsNotActive();
-        }
-    }
-
-    private PlayerUseCaseResponse addLineUpEvent(Match match, SubstitutePlayerRequest command) {
-        try {
-            verifyIfPlayerPartOfTeams(command);
-            match.addPLayerEvent(createLineUpEvent(command));
-            return PlayerUseCaseResponse.successful();
         } catch (LineUpNotAllowedException e) {
             return PlayerUseCaseResponse.lineUpNotAllowed();
         }
@@ -96,7 +65,9 @@ public class SubstitutePlayerUseCase implements UseCaseHandler<SubstitutePlayerR
                 .build();
     }
 
-    private static PlayerEvent createLineUpEvent(SubstitutePlayerRequest command) {
+    private PlayerEvent createLineUpEvent(SubstitutePlayerRequest command) {
+        verifyIfPlayerPartOfTeams(command);
+
         return PlayerEvent.builder()
                 .playerId(command.substituteForPlayerId())
                 .eventType(PlayerEventType.LINED_UP)

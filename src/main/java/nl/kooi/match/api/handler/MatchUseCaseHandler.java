@@ -2,7 +2,7 @@ package nl.kooi.match.api.handler;
 
 import lombok.RequiredArgsConstructor;
 import nl.kooi.match.core.command.match.*;
-import nl.kooi.match.core.domain.exception.MatchEventException;
+import nl.kooi.match.exception.MatchEventException;
 import nl.kooi.match.core.usecases.match.*;
 import nl.kooi.match.enums.ResponseType;
 import nl.kooi.match.exception.NotFoundException;
