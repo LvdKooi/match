@@ -10,14 +10,14 @@ Feature: the player substitute use case
     And this match is currently taking place
     When player Ronaldo is substituted by player Messi at minute 0
     Then the event is added to the match
-    And the match contains 2 events for player Ronaldo
-    And the match contains 1 event for player Messi
+    And the match contains the following events for player Ronaldo: "LINED_UP, SUBSTITUTED"
+    And the match contains the following events for player Messi: "LINED_UP"
 
   Scenario: A player that is not playing in the match gets substituted
     Given this match is currently taking place
     When player Ronaldo is substituted by a player that is not part of the match at minute 0
     Then event is not added to the match because the line up is not allowed
-    And the match contains 1 events for player Ronaldo
+    And the match contains the following events for player Ronaldo: "LINED_UP"
 
   Scenario: A player that was already substituted gets substituted again
     Given team1 has a player Messi
@@ -25,8 +25,8 @@ Feature: the player substitute use case
     And player Ronaldo is substituted by player Messi at minute 0
     When player Ronaldo is substituted by player Messi at minute 2
     Then event is not added to the match because the player is not active in the match
-    And the match contains 2 events for player Ronaldo
-    And the match contains 1 event for player Messi
+    And the match contains the following events for player Ronaldo: "LINED_UP, SUBSTITUTED"
+    And the match contains the following events for player Messi: "LINED_UP"
 
   Scenario: A player that is currently in the match gets substituted by another player that is currently in the match
     Given team1 has a player Messi
@@ -34,8 +34,8 @@ Feature: the player substitute use case
     And this match is currently taking place
     When player Ronaldo is substituted by player Messi at minute 2
     Then event is not added to the match because the line up is not allowed
-    And the match contains 1 event for player Ronaldo
-    And the match contains 1 event for player Messi
+    And the match contains the following events for player Ronaldo: "LINED_UP"
+    And the match contains the following events for player Messi: "LINED_UP"
 
   Scenario: A player gets substituted while match has not started yet
     Given team1 has a player Messi

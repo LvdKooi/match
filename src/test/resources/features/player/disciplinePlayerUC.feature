@@ -9,11 +9,11 @@ Feature: the player substitute use case
   Scenario Outline: A player that is currently in the match gets a valid card
     When player Ronaldo gets a <card_type> card at minute 0
     Then the event is added to the match
-    And the match contains 2 events for player Ronaldo
+    And the match contains the following events for player Ronaldo: <event_types>
     Examples:
-      | card_type |
-      | YELLOW    |
-      | RED       |
+      | card_type | event_types            |
+      | YELLOW    | "LINED_UP, YELLOW_CARD" |
+      | RED       | "LINED_UP, RED_CARD"    |
 
   Scenario: A player that is not playing in the match gets a yellow card
     When a player that is not part of the match gets a YELLOW card at minute 0
@@ -23,19 +23,19 @@ Feature: the player substitute use case
     Given player Ronaldo got a YELLOW card at minute 0
     When player Ronaldo gets a YELLOW card at minute 1
     Then event is not added to the match because the player already had a yellow card
-    And the match contains 2 events for player Ronaldo
+    And the match contains the following events for player Ronaldo: "LINED_UP, YELLOW_CARD"
 
   Scenario: A player that already had a yellow card gets a red card
     Given player Ronaldo got a YELLOW card at minute 0
     When player Ronaldo gets a RED card at minute 1
     Then the event is added to the match
-    And the match contains 3 events for player Ronaldo
+    And the match contains the following events for player Ronaldo: "LINED_UP, YELLOW_CARD, RED_CARD"
 
   Scenario: A player that already had taking red card gets another red card
     Given player Ronaldo got a RED card at minute 0
     When player Ronaldo gets a RED card at minute 1
     Then event is not added to the match because the player is not active in the match
-    And the match contains 2 events for player Ronaldo
+    And the match contains the following events for player Ronaldo: "LINED_UP, RED_CARD"
 
   Scenario: A player gets disciplined while match has not started yet
     When a player that is not part of the match gets a RED card at minute 0

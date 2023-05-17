@@ -9,7 +9,7 @@ Feature: the player is injured use case
     Given this match is currently taking place
     When player Ronaldo becomes injured in minute 0
     Then the event is added to the match
-    And the match contains 2 events for player Ronaldo
+    And the match contains the following events for player Ronaldo: "LINED_UP, INJURED"
 
   Scenario: A player that is not playing in the match gets injured
     Given this match is currently taking place
@@ -21,7 +21,7 @@ Feature: the player is injured use case
     And player Ronaldo became injured in minute 0
     When player Ronaldo becomes injured in minute 1
     Then the event is added to the match
-    And the match contains 3 events for player Ronaldo
+    And the match contains the following events for player Ronaldo: "LINED_UP, INJURED, INJURED"
 
   Scenario: A player becomes injured while match has not started yet
     Given team1 has a player Ronaldo

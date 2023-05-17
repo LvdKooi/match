@@ -29,6 +29,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static nl.kooi.match.enums.InjuryType.INJURED;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -252,13 +253,19 @@ public class MatchStepdefs extends CucumberBaseIT {
                 .orElseThrow();
     }
 
-    @And("the match contains {int} events for player {word}")
-    @And("the match contains {int} event for player {word}")
-    public void theMatchContainsEventsForPlayer(int numberOfEvents, String playerName) {
+    @And("the match contains the following events for player {word}: {string}")
+    public void theMatchContainsTheFollowingEventsForPlayer(String playerName, String eventsString) {
+        var events = Stream.of(eventsString.split(",")).map(String::trim).toList();
+
         makeViewMatchRequest(matchId);
 
-        assertThat(matchResponse.playerEvents().stream()
+        var playerEventTypes = matchResponse.playerEvents().stream()
                 .filter(event -> event.playerId().equals(playersByName.get(playerName).getId()))
-                .count()).isEqualTo(numberOfEvents);
+                .map(PlayerEventDto::eventType)
+                .map(PlayerEventType::name).toList();
+
+        assertThat(events.size()).isEqualTo(playerEventTypes.size());
+
+        assertThat(events.containsAll(playerEventTypes)).isTrue();
     }
 }
