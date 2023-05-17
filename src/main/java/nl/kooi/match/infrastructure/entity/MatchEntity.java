@@ -16,17 +16,22 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class MatchEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @CreationTimestamp()
+    @EqualsAndHashCode.Include
     private Instant creationTimestamp;
 
     @NotNull
+    @EqualsAndHashCode.Include
     private Instant startTimestamp;
+
     private Instant endTimestamp;
 
     @NotNull
@@ -35,6 +40,7 @@ public class MatchEntity {
 
     @OneToOne
     private TeamEntity team1;
+
     @OneToOne
     private TeamEntity team2;
 
