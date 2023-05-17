@@ -9,14 +9,14 @@ Feature: the player substitute use case
     Given team1 has a player Messi
     And this match is currently taking place
     When player Ronaldo is substituted by player Messi at minute 0
-    Then the request is handled successfully
+    Then the event is added to the match
     And the match contains 2 events for player Ronaldo
     And the match contains 1 event for player Messi
 
   Scenario: A player that is not playing in the match gets substituted
     Given this match is currently taking place
     When player Ronaldo is substituted by a player that is not part of the match at minute 0
-    Then an error is shown stating: "Event is not valid: LINE_UP_NOT_ALLOWED"
+    Then event is not added to the match because the line up is not allowed
     And the match contains 1 events for player Ronaldo
 
   Scenario: A player that was already substituted gets substituted again
@@ -24,7 +24,7 @@ Feature: the player substitute use case
     And this match is currently taking place
     And player Ronaldo is substituted by player Messi at minute 0
     When player Ronaldo is substituted by player Messi at minute 2
-    Then an error is shown stating: "Event is not valid: PLAYER_NOT_ACTIVE_IN_MATCH"
+    Then event is not added to the match because the player is not active in the match
     And the match contains 2 events for player Ronaldo
     And the match contains 1 event for player Messi
 
@@ -33,17 +33,17 @@ Feature: the player substitute use case
     And player Messi is currently lined up
     And this match is currently taking place
     When player Ronaldo is substituted by player Messi at minute 2
-    Then an error is shown stating: "Event is not valid: LINE_UP_NOT_ALLOWED"
+    Then event is not added to the match because the line up is not allowed
     And the match contains 1 event for player Ronaldo
     And the match contains 1 event for player Messi
 
   Scenario: A player gets substituted while match has not started yet
     Given team1 has a player Messi
     When player Ronaldo is substituted by player Messi at minute 0
-    Then an error is shown stating: "Event is not valid: MATCH_NOT_ACTIVE"
+    Then event is not added to the match because the match is not active
 
   Scenario: A player gets substituted after match has taken place
     Given team1 has a player Messi
     And this match has already ended
     When player Ronaldo is substituted by player Messi at minute 0
-    Then an error is shown stating: "Event is not valid: MATCH_NOT_ACTIVE"
+    Then event is not added to the match because the match is not active

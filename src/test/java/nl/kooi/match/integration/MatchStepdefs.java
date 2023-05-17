@@ -101,7 +101,7 @@ public class MatchStepdefs extends CucumberBaseIT {
         teamRepository.save(team);
     }
 
-    @Then("the request is handled successfully")
+    @Then("the event is added to the match")
     public void theRequestIsHandledSuccessfully() {
         assertThat(Optional.ofNullable(response)
                 .map(r -> r.getStatusCode().is2xxSuccessful())
@@ -133,19 +133,37 @@ public class MatchStepdefs extends CucumberBaseIT {
         makePlayerUseCaseRequest(matchId, request);
     }
 
-    @Then("an error is shown stating: {string}")
-    public void anErrorIsShownStatingPlayerIsCurrentlyNotInMatch(String msg) {
+    private void assertThatErrorHasMessage(String msg) {
         assertThat(Optional.ofNullable(error)
                 .map(ResponseEntity::getBody)
                 .map(ProblemDetail::getDetail)
                 .orElseGet(String::new)).isEqualTo(msg);
     }
 
+    @Then("event is not added to the match because the player already had a yellow card")
+    public void eventIsNotAddedToTheMatchBecauseThePlayerAlreadyHadAYellowCard() {
+        assertThatErrorHasMessage("Event is not valid: ALREADY_HAD_A_YELLOW_CARD");
+    }
+
+    @Then("event is not added to the match because the player is not active in the match")
+    public void eventIsNotAddedToTheMatchBecauseThePlayerIsNotActiveInTheMatch() {
+        assertThatErrorHasMessage("Event is not valid: PLAYER_NOT_ACTIVE_IN_MATCH");
+    }
+
+    @Then("event is not added to the match because the match is not active")
+    public void eventIsNotAddedToTheMatchBecauseTheMatchIsNotActive() {
+        assertThatErrorHasMessage("Event is not valid: MATCH_NOT_ACTIVE");
+    }
+
+    @Then("event is not added to the match because the line up is not allowed")
+    public void eventIsNotAddedToTheMatchBecauseTheLineUpIsNotAllowed() {
+        assertThatErrorHasMessage("Event is not valid: LINE_UP_NOT_ALLOWED");
+    }
+
     @And("this match has already ended")
     public void thisMatchHasAlreadyEnded() {
         makeMatchUseCaseRequest(matchId, new MatchEventRequestDto(MatchEventType.ENDING));
     }
-
 
     @When("player {word} becomes injured in minute {int}")
     @Given("player {word} became injured in minute {int}")

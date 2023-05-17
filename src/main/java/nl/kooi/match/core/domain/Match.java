@@ -14,7 +14,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-
 @Validated
 public record Match(Long id,
                     MatchStatus matchStatus,
@@ -38,7 +37,7 @@ public record Match(Long id,
         return withMatch()
                 .filter(match -> match.matchStatus().canTransitionTo(newStatus))
                 .map(match -> new Match(match.id(), newStatus, match.startTimestamp, match.endTimestamp, match.matchName, match.playerEvents))
-                .orElseThrow(() -> MatchStatusException.newStatusNotAllowed(matchStatus, newStatus));
+                .orElseThrow(() -> MatchStatusException.newStatusNotAllowed(matchName, matchStatus, newStatus));
     }
 
     @Override
@@ -89,7 +88,7 @@ public record Match(Long id,
         withMatch()
                 .map(Match::matchStatus)
                 .filter(status -> status == MatchStatus.STARTED)
-                .orElseThrow(MatchStatusException::matchIsNotActive);
+                .orElseThrow(() -> MatchStatusException.matchIsNotActive(matchName));
     }
 
     private Optional<Match> withMatch() {
