@@ -134,6 +134,17 @@ public class MatchStepdefs extends CucumberBaseIT {
         makePlayerUseCaseRequest(matchId, request);
     }
 
+    @When("a player that is not part of the match scores a goal at minute {int}")
+    public void playerScoresAtMinute(int minute) {
+        var request = new PlayerScoredEventDto();
+        request.setMinute(minute);
+        request.setPlayerId(10000L);
+        request.setEventType(PlayerEventType.SCORED);
+
+        makePlayerUseCaseRequest(matchId, request);
+    }
+
+
     private void assertThatErrorHasMessage(String msg) {
         assertThat(Optional.ofNullable(error)
                 .map(ResponseEntity::getBody)
@@ -200,7 +211,7 @@ public class MatchStepdefs extends CucumberBaseIT {
     }
 
     @When("player {word} is substituted by player {word} at minute {int}")
-    public void playerIsSubstitutedByPlayerMessi(String player1, String player2, int minute) {
+    public void playerIsSubstitutedByPlayer(String player1, String player2, int minute) {
         var request = new SubstitutionEventDto();
         request.setPlayerId(playersByName.get(player1).getId());
         request.setSubstituteForPlayerId(playersByName.get(player2).getId());
@@ -217,6 +228,16 @@ public class MatchStepdefs extends CucumberBaseIT {
         request.setSubstituteForPlayerId(10000L);
         request.setMinute(minute);
         request.setEventType(PlayerEventType.SUBSTITUTED);
+
+        makePlayerUseCaseRequest(matchId, request);
+    }
+
+    @When("player {word} scores a goal at minute {int}")
+    public void playerScoresAGoalAtMinute(String playerName, int minute) {
+        var request = new PlayerScoredEventDto();
+        request.setMinute(minute);
+        request.setPlayerId(playersByName.get(playerName).getId());
+        request.setEventType(PlayerEventType.SCORED);
 
         makePlayerUseCaseRequest(matchId, request);
     }
@@ -262,7 +283,9 @@ public class MatchStepdefs extends CucumberBaseIT {
         var playerEventTypes = matchResponse.playerEvents().stream()
                 .filter(event -> event.playerId().equals(playersByName.get(playerName).getId()))
                 .map(PlayerEventDto::eventType)
-                .map(PlayerEventType::name).toList();
+                .map(PlayerEventType::name)
+                .peek(System.out::println)
+                .toList();
 
         assertThat(events.size()).isEqualTo(playerEventTypes.size());
 

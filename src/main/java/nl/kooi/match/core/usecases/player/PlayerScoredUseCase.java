@@ -37,6 +37,7 @@ public class PlayerScoredUseCase implements UseCaseHandler<PlayerScoredRequest, 
             return Optional.ofNullable(command)
                     .map(PlayerScoredUseCase::createPlayerEvent)
                     .map(match::addPlayerEvent)
+                    .map(matchDao::update)
                     .map(successful -> PlayerUseCaseResponse.successful())
                     .orElseGet(PlayerUseCaseResponse::fail);
         } catch (MatchStatusException matchStatusException) {

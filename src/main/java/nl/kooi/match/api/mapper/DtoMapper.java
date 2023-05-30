@@ -7,10 +7,7 @@ import nl.kooi.match.api.dto.player.*;
 import nl.kooi.match.core.command.match.AnnounceMatchRequest;
 import nl.kooi.match.core.command.match.MatchUseCaseResponse;
 import nl.kooi.match.core.command.match.ViewMatchUseCaseResponse;
-import nl.kooi.match.core.command.player.DisciplinePlayerRequest;
-import nl.kooi.match.core.command.player.InjuredPlayerRequest;
-import nl.kooi.match.core.command.player.LineUpPlayerRequest;
-import nl.kooi.match.core.command.player.SubstitutePlayerRequest;
+import nl.kooi.match.core.command.player.*;
 import nl.kooi.match.core.domain.PlayerEvent;
 import org.mapstruct.ReportingPolicy;
 
@@ -33,5 +30,5 @@ public interface DtoMapper {
 
     PlayerEventDto map(PlayerEvent event);
 
-    DisciplinePlayerRequest map(PlayerScoredEventDto requestDto, Long matchId);
+    PlayerScoredRequest map(PlayerScoredEventDto requestDto, Long matchId);
 }
