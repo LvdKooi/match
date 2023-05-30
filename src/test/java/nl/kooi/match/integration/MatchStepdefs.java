@@ -201,9 +201,22 @@ public class MatchStepdefs extends CucumberBaseIT {
     }
 
     @And("player {word} is currently lined up")
+    @And("player {word} gets lined up")
+    @And("player {word} gets lined up again")
     public void playerIsCurrentlyLinedUp(String playerName) {
         var request = new PlayerLineUpEventDto();
         request.setPlayerId(playersByName.get(playerName).getId());
+        request.setMinute(0);
+        request.setEventType(PlayerEventType.LINED_UP);
+
+        makePlayerUseCaseRequest(matchId, request);
+    }
+
+
+    @And("player that is not part of both teams gets lined up")
+    public void unknownPlayerIsCurrentlyLinedUp() {
+        var request = new PlayerLineUpEventDto();
+        request.setPlayerId(10000L);
         request.setMinute(0);
         request.setEventType(PlayerEventType.LINED_UP);
 

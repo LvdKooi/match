@@ -55,12 +55,6 @@ public interface Mapper {
                 .reduce("", (s1, s2) -> s1.equals("") ? s2 : s1.concat(" - ").concat(s2));
     }
 
-    default String concatTeamNames(String teamName1, String teamName2) {
-        return Stream.of(teamName1, teamName2)
-                .filter(Objects::nonNull)
-                .reduce("", (s1, s2) -> s1.equals("") ? s2 : s1.concat(" - ").concat(s2));
-    }
-
     default PlayerEntity mapPlayerFromPlayerEvent(PlayerEvent event) {
         return Optional.ofNullable(event)
                 .map(PlayerEvent::getPlayerId)
