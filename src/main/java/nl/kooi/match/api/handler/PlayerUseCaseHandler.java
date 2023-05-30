@@ -2,10 +2,7 @@ package nl.kooi.match.api.handler;
 
 import lombok.RequiredArgsConstructor;
 import nl.kooi.match.core.command.player.*;
-import nl.kooi.match.core.usecases.player.DisciplinePlayerUseCase;
-import nl.kooi.match.core.usecases.player.InjuredPlayerUseCase;
-import nl.kooi.match.core.usecases.player.LineUpPlayerUseCase;
-import nl.kooi.match.core.usecases.player.SubstitutePlayerUseCase;
+import nl.kooi.match.core.usecases.player.*;
 import nl.kooi.match.enums.ResponseType;
 import nl.kooi.match.exception.NotFoundException;
 import nl.kooi.match.exception.PlayerEventException;
@@ -24,6 +21,7 @@ public class PlayerUseCaseHandler {
     private final InjuredPlayerUseCase injuredPlayerUseCase;
     private final LineUpPlayerUseCase lineUpPlayerUseCase;
     private final SubstitutePlayerUseCase substitutePlayerUseCase;
+    private final PlayerScoredUseCase playerScoredUseCase;
 
 
     public void handleUseCaseRequest(LineUpPlayerRequest request) throws Exception {
@@ -40,6 +38,10 @@ public class PlayerUseCaseHandler {
 
     public void handleUseCaseRequest(DisciplinePlayerRequest request) throws Exception {
         handleRequest(() -> disciplinePlayerUseCase.handle(request));
+    }
+
+    public void handleUseCaseRequest(PlayerScoredRequest request) throws Exception {
+        handleRequest(() -> playerScoredUseCase.handle(request));
     }
 
     private void handleRequest(Callable<PlayerUseCaseResponse> callable) throws Exception {

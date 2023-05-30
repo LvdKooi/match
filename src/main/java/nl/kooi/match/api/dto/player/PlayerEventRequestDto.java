@@ -19,6 +19,7 @@ import nl.kooi.match.enums.PlayerEventType;
         @JsonSubTypes.Type(value = InjuryEventDto.class, name = "INJURED"),
         @JsonSubTypes.Type(value = PlayerLineUpEventDto.class, name = "LINED_UP"),
         @JsonSubTypes.Type(value = SubstitutionEventDto.class, name = "SUBSTITUTED"),
+        @JsonSubTypes.Type(value = PlayerScoredEventDto.class, name = "SCORED"),
 })
 @Data
 public abstract class PlayerEventRequestDto {

@@ -32,4 +32,6 @@ public interface DtoMapper {
     ViewMatchResponseDto map(ViewMatchUseCaseResponse response);
 
     PlayerEventDto map(PlayerEvent event);
+
+    DisciplinePlayerRequest map(PlayerScoredEventDto requestDto, Long matchId);
 }

@@ -28,6 +28,7 @@ public class PlayerController {
             case SUBSTITUTED ->
                     playerUseCaseHandler.handleUseCaseRequest(mapper.map((SubstitutionEventDto) requestDto, matchId));
             case INJURED -> playerUseCaseHandler.handleUseCaseRequest(mapper.map((InjuryEventDto) requestDto, matchId));
+            case SCORED -> playerUseCaseHandler.handleUseCaseRequest(mapper.map((PlayerScoredEventDto) requestDto, matchId));
             case YELLOW_CARD,
                     RED_CARD ->
                     playerUseCaseHandler.handleUseCaseRequest(mapper.map((DisciplineEventDto) requestDto, matchId));

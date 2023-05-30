@@ -5,6 +5,6 @@ public enum PlayerEventType {
     SUBSTITUTED,
     INJURED,
     YELLOW_CARD,
-    RED_CARD
-
+    RED_CARD,
+    SCORED
 }

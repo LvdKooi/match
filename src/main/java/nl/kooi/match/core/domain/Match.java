@@ -47,7 +47,7 @@ public record Match(Long id,
 
     public Match addPlayerEvent(@Valid @NotNull PlayerEvent event) {
         switch (event.getEventType()) {
-            case INJURED, SUBSTITUTED, RED_CARD -> {
+            case INJURED, SUBSTITUTED, RED_CARD, SCORED -> {
                 verifyIfMatchIsStarted();
                 verifyIsCurrentlyPartOfMatch(event);
             }
