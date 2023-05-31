@@ -12,6 +12,7 @@ import nl.kooi.match.exception.MatchStatusException;
 import nl.kooi.match.exception.PlayerException;
 import nl.kooi.match.infrastructure.port.MatchDao;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Optional;
@@ -20,6 +21,7 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 @Validated
+@Transactional
 public class PlayerScoredUseCase implements UseCaseHandler<PlayerScoredRequest, PlayerUseCaseResponse> {
 
     private final MatchDao matchDao;
